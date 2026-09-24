@@ -25,10 +25,6 @@ public class SecurityConfig {
     @Autowired
     private CustomOidcUserService customOidcUserService;
 
-    /**
-     * AC5 + AC6: /api/** — тільки JWT (Bearer). DELETE додатково обмежений
-     * на рівні SecurityFilterChain (AC6), окремо від @PreAuthorize (AC7).
-     */
     @Bean
     @Order(1)
     public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -50,11 +46,6 @@ public class SecurityConfig {
         return http.build();
     }
 
-    /**
-     * AC4: усе інше (сам сайт, "/" = static/index.html) — OIDC-логін
-     * через Keycloak. Ролі беремо з access token (CustomOidcUserService),
-     * бо в ID token Keycloak resource_access не кладе.
-     */
     @Bean
     @Order(2)
     public SecurityFilterChain uiSecurityFilterChain(HttpSecurity http) throws Exception {
