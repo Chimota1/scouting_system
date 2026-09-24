@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="1" author="anatolii">
+        <createTable tableName="countries">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="country_name" type="VARCHAR(255)"/>
+            <column name="continent" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2" author="anatolii">
+        <createTable tableName="leagues">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="league_name" type="VARCHAR(255)"/>
+            <column name="country_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="3" author="anatolii">
+        <createTable tableName="clubs">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="club_name" type="VARCHAR(255)"/>
+            <column name="league_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="4" author="anatolii">
+        <createTable tableName="managers">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="manager_name" type="VARCHAR(255)"/>
+            <column name="manager_age" type="INT"/>
+            <column name="club_id" type="BIGINT">
+                <constraints unique="true"/> <!-- OneToOne зв'язок -->
+            </column>
+            <column name="country_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="5" author="anatolii">
+        <createTable tableName="players">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="player_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="player_age" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="player_goals" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="club_id" type="BIGINT"/>
+            <column name="country_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="6" author="anatolii">
+        <addForeignKeyConstraint baseTableName="leagues"
+                                 baseColumnNames="country_id"
+                                 referencedTableName="countries"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_leagues_countries"/>
+
+        <addForeignKeyConstraint baseTableName="clubs"
+                                 baseColumnNames="league_id"
+                                 referencedTableName="leagues"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_clubs_leagues"/>
+
+        <addForeignKeyConstraint baseTableName="managers"
+                                 baseColumnNames="club_id"
+                                 referencedTableName="clubs"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_managers_clubs"/>
+
+        <addForeignKeyConstraint baseTableName="managers"
+                                 baseColumnNames="country_id"
+                                 referencedTableName="countries"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_managers_countries"/>
+
+        <addForeignKeyConstraint baseTableName="players"
+                                 baseColumnNames="club_id"
+                                 referencedTableName="clubs"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_players_clubs"/>
+
+        <addForeignKeyConstraint baseTableName="players"
+                                 baseColumnNames="country_id"
+                                 referencedTableName="countries"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_players_countries"/>
+    </changeSet>
+</databaseChangeLog>

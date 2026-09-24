@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ScoutingSys — Адмін-панель</title>
+  <style>
+    :root {
+      --bg: #f4f5f7;
+      --panel: #ffffff;
+      --border: #dfe2e7;
+      --text: #1f2430;
+      --muted: #6b7280;
+      --accent: #2f6feb;
+      --accent-hover: #245ac2;
+      --danger: #d64545;
+      --danger-hover: #b53838;
+      --success: #1f9d55;
+      --radius: 8px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    header {
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      padding: 18px 28px;
+    }
+    header h1 { margin: 0; font-size: 20px; }
+    header p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+
+    nav.tabs {
+      display: flex;
+      gap: 4px;
+      padding: 0 28px;
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      overflow-x: auto;
+    }
+    nav.tabs button {
+      border: none;
+      background: none;
+      padding: 12px 16px;
+      font-size: 14px;
+      cursor: pointer;
+      color: var(--muted);
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+    }
+    nav.tabs button.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+      font-weight: 600;
+    }
+
+    main { padding: 24px 28px 60px; max-width: 1100px; margin: 0 auto; }
+    section.tab-panel { display: none; }
+    section.tab-panel.active { display: block; }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .card h2 { margin: 0 0 14px; font-size: 16px; }
+
+    form.entity-form {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      align-items: end;
+    }
+    .field { display: flex; flex-direction: column; gap: 4px; }
+    .field label { font-size: 12px; color: var(--muted); }
+    .field input, .field select {
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 14px;
+      background: #fff;
+    }
+    .field input:focus, .field select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    .form-actions { display: flex; gap: 8px; }
+
+    button.btn {
+      border: none;
+      border-radius: 6px;
+      padding: 9px 16px;
+      font-size: 14px;
+      cursor: pointer;
+      background: var(--accent);
+      color: #fff;
+    }
+    button.btn:hover { background: var(--accent-hover); }
+    button.btn.secondary {
+      background: #fff;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    button.btn.secondary:hover { background: #f0f1f3; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th, td {
+      text-align: left;
+      padding: 10px 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; }
+    tbody tr:hover { background: #fafbfc; }
+    td.actions { display: flex; gap: 6px; white-space: nowrap; }
+    button.btn-sm {
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 6px;
+      padding: 5px 10px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    button.btn-sm.edit:hover { border-color: var(--accent); color: var(--accent); }
+    button.btn-sm.delete:hover { border-color: var(--danger); color: var(--danger); }
+    .empty-row td { color: var(--muted); text-align: center; padding: 20px; }
+
+    #toast {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      max-width: 380px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+      display: none;
+      z-index: 100;
+      white-space: pre-line;
+    }
+    #toast.show { display: block; }
+    #toast.success { background: var(--success); }
+    #toast.error { background: var(--danger); }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #eef1f5;
+      color: var(--muted);
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+
+<header style="display: flex; justify-content: space-between; align-items: center;">
+  <div>
+    <h1>ScoutingSys — Адмін-панель</h1>
+    <p>Простий функціональний UI для CRUD-операцій над Country / League / Club / Manager / Player</p>
+  </div>
+  <!-- Ось цей блок з ідентифікатором, який шукає JS -->
+  <div style="display: flex; gap: 15px; align-items: center;">
+    <span id="user-info" style="font-weight: bold; color: var(--accent);">Завантаження...</span>
+    <button class="btn secondary" onclick="window.location.href='/logout'">Вийти</button>
+  </div>
+</header>
+
+<nav class="tabs">
+  <button data-tab="countries" class="active">Країни</button>
+  <button data-tab="leagues">Ліги</button>
+  <button data-tab="clubs">Клуби</button>
+  <button data-tab="managers">Тренери</button>
+  <button data-tab="players">Гравці</button>
+</nav>
+
+<div id="toast"></div>
+
+<!-- Додаємо id="main-content" і приховуємо до успішної авторизації -->
+<main id="main-content" style="display: none;">
+
+  <!-- ===================== COUNTRIES ===================== -->
+  <section class="tab-panel active" id="tab-countries">
+    <div class="card">
+      <h2 id="country-form-title">Нова країна</h2>
+      <form class="entity-form" id="country-form">
+        <input type="hidden" id="country-id">
+        <div class="field">
+          <label>Назва країни</label>
+          <input type="text" id="country-name" required>
+        </div>
+        <div class="field">
+          <label>Континент</label>
+          <input type="text" id="country-continent" required>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn">Зберегти</button>
+          <button type="button" class="btn secondary" onclick="resetForm('country')">Скасувати</button>
+        </div>
+      </form>
+    </div>
+    <div class="card">
+      <h2>Список країн</h2>
+      <table>
+        <thead><tr><th>ID</th><th>Назва</th><th>Континент</th><th></th></tr></thead>
+        <tbody id="country-table-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ===================== LEAGUES ===================== -->
+  <section class="tab-panel" id="tab-leagues">
+    <div class="card">
+      <h2 id="league-form-title">Нова ліга</h2>
+      <form class="entity-form" id="league-form">
+        <input type="hidden" id="league-id">
+        <div class="field">
+          <label>Назва ліги</label>
+          <input type="text" id="league-name" required>
+        </div>
+        <div class="field">
+          <label>Країна</label>
+          <select id="league-country" required></select>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn">Зберегти</button>
+          <button type="button" class="btn secondary" onclick="resetForm('league')">Скасувати</button>
+        </div>
+      </form>
+    </div>
+    <div class="card">
+      <h2>Список ліг</h2>
+      <table>
+        <thead><tr><th>ID</th><th>Назва</th><th>Країна</th><th>Клубів</th><th></th></tr></thead>
+        <tbody id="league-table-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ===================== CLUBS ===================== -->
+  <section class="tab-panel" id="tab-clubs">
+    <div class="card">
+      <h2 id="club-form-title">Новий клуб</h2>
+      <form class="entity-form" id="club-form">
+        <input type="hidden" id="club-id">
+        <div class="field">
+          <label>Назва клубу</label>
+          <input type="text" id="club-name" required>
+        </div>
+        <div class="field">
+          <label>Ліга</label>
+          <select id="club-league" required></select>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn">Зберегти</button>
+          <button type="button" class="btn secondary" onclick="resetForm('club')">Скасувати</button>
+        </div>
+      </form>
+    </div>
+    <div class="card">
+      <h2>Список клубів</h2>
+      <table>
+        <thead><tr><th>ID</th><th>Назва</th><th>Ліга</th><th>Тренер</th><th>Гравців</th><th></th></tr></thead>
+        <tbody id="club-table-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ===================== MANAGERS ===================== -->
+  <section class="tab-panel" id="tab-managers">
+    <div class="card">
+      <h2 id="manager-form-title">Новий тренер</h2>
+      <form class="entity-form" id="manager-form">
+        <input type="hidden" id="manager-id">
+        <div class="field">
+          <label>Ім'я тренера</label>
+          <input type="text" id="manager-name" required>
+        </div>
+        <div class="field">
+          <label>Вік</label>
+          <input type="number" id="manager-age" min="18" max="90" required>
+        </div>
+        <div class="field">
+          <label>Країна</label>
+          <select id="manager-country" required></select>
+        </div>
+        <div class="field">
+          <label>Клуб (необов'язково)</label>
+          <select id="manager-club">
+            <option value="">— без клубу —</option>
+          </select>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn">Зберегти</button>
+          <button type="button" class="btn secondary" onclick="resetForm('manager')">Скасувати</button>
+        </div>
+      </form>
+    </div>
+    <div class="card">
+      <h2>Список тренерів</h2>
+      <table>
+        <thead><tr><th>ID</th><th>Ім'я</th><th>Вік</th><th>Країна</th><th>Клуб</th><th></th></tr></thead>
+        <tbody id="manager-table-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ===================== PLAYERS ===================== -->
+  <section class="tab-panel" id="tab-players">
+    <div class="card">
+      <h2 id="player-form-title">Новий гравець</h2>
+      <form class="entity-form" id="player-form">
+        <input type="hidden" id="player-id">
+        <div class="field">
+          <label>Ім'я гравця</label>
+          <input type="text" id="player-name" required>
+        </div>
+        <div class="field">
+          <label>Вік</label>
+          <input type="number" id="player-age" min="14" max="50" required>
+        </div>
+        <div class="field">
+          <label>Голи</label>
+          <input type="number" id="player-goals" min="0" required>
+        </div>
+        <div class="field">
+          <label>Країна</label>
+          <select id="player-country" required></select>
+        </div>
+        <div class="field">
+          <label>Клуб (необов'язково)</label>
+          <select id="player-club">
+            <option value="">— без клубу —</option>
+          </select>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn">Зберегти</button>
+          <button type="button" class="btn secondary" onclick="resetForm('player')">Скасувати</button>
+        </div>
+      </form>
+    </div>
+    <div class="card">
+      <h2>Список гравців</h2>
+      <table>
+        <thead><tr><th>ID</th><th>Ім'я</th><th>Вік</th><th>Голи</th><th>Країна</th><th>Клуб</th><th></th></tr></thead>
+        <tbody id="player-table-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  const API = 'http://localhost:8080/api';
+  const state = { countries: [], leagues: [], clubs: [], managers: [], players: [] };
+  let ACCESS_TOKEN = null;
+
+  /* ---------------------- tabs ---------------------- */
+  document.querySelectorAll('nav.tabs button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('nav.tabs button').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  /* ---------------------- toast ---------------------- */
+  let toastTimer;
+  function showMessage(text, type) {
+    const el = document.getElementById('toast');
+    el.textContent = text;
+    el.className = 'show ' + type;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove('show'), 5000);
+  }
+
+  /* ---------------------- generic API helper ---------------------- */
+  async function apiFetch(path, options = {}) {
+    let res;
+    try {
+      res = await fetch(API + path, {
+        ...options,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ' + ACCESS_TOKEN,
+          ...(options.headers || {})
+        }
+      });
+    } catch (e) {
+      throw new Error('Немає зʼєднання з бекендом (' + API + path + '). Застосунок запущено?');
+    }
+
+    // Якщо токен протух або немає прав — йдемо на логін
+    if (res.status === 401 || res.status === 403) {
+      window.location.href = '/oauth2/authorization/keycloak';
+      return null;
+    }
+
+    if (res.status === 204) return null;
+
+    let body = null;
+    const text = await res.text();
+    if (text) {
+      try { body = JSON.parse(text); } catch (e) { body = text; }
+    }
+
+    if (!res.ok) {
+      throw new Error(extractErrorMessage(res, body));
+    }
+    return body;
+  }
+
+  function extractErrorMessage(res, body) {
+    if (body && typeof body === 'object') {
+      if (Array.isArray(body.errors) && body.errors.length) {
+        return body.errors.map(e => e.defaultMessage || e.message || JSON.stringify(e)).join('\n');
+      }
+      if (body.detail) return body.detail;
+      if (body.message) return body.message;
+      if (body.error) return body.error + (body.status ? ' (' + body.status + ')' : '');
+    }
+    if (typeof body === 'string' && body.trim()) return body;
+    return 'Помилка ' + res.status + ' ' + res.statusText;
+  }
+
+  /* ---------------------- load everything ---------------------- */
+  async function loadAll() {
+    try {
+      const [countries, leagues, clubs, managers, players] = await Promise.all([
+        apiFetch('/countries'),
+        apiFetch('/leagues'),
+        apiFetch('/clubs'),
+        apiFetch('/managers'),
+        apiFetch('/players'),
+      ]);
+      state.countries = countries || [];
+      state.leagues = leagues || [];
+      state.clubs = clubs || [];
+      state.managers = managers || [];
+      state.players = players || [];
+      renderAll();
+    } catch (e) {
+      showMessage(e.message, 'error');
+    }
+  }
+
+  function renderAll() {
+    fillSelect('league-country', state.countries, c => c.id, c => c.countryName);
+    fillSelect('club-league', state.leagues, l => l.id, l => l.leagueName);
+    fillSelect('manager-country', state.countries, c => c.id, c => c.countryName);
+    fillSelect('player-country', state.countries, c => c.id, c => c.countryName);
+    fillSelect('manager-club', state.clubs, c => c.id, c => c.clubName, true);
+    fillSelect('player-club', state.clubs, c => c.id, c => c.clubName, true);
+
+    renderCountries();
+    renderLeagues();
+    renderClubs();
+    renderManagers();
+    renderPlayers();
+  }
+
+  function fillSelect(selectId, items, valueFn, labelFn, keepFirstOption) {
+    const select = document.getElementById(selectId);
+    const currentValue = select.value;
+    const firstOption = keepFirstOption ? select.querySelector('option[value=""]') : null;
+    select.innerHTML = '';
+    if (firstOption) select.appendChild(firstOption);
+    items.forEach(item => {
+      const opt = document.createElement('option');
+      opt.value = valueFn(item);
+      opt.textContent = labelFn(item);
+      select.appendChild(opt);
+    });
+    select.value = currentValue;
+  }
+
+  function findById(list, id) {
+    return list.find(x => String(x.id) === String(id));
+  }
+
+  function nameOrDash(list, id, labelFn) {
+    if (id === null || id === undefined) return '<span class="badge">—</span>';
+    const item = findById(list, id);
+    return item ? labelFn(item) : '<span class="badge">#' + id + '</span>';
+  }
+
+  /* ==================================================================
+     COUNTRIES
+     ================================================================== */
+  function renderCountries() {
+    const body = document.getElementById('country-table-body');
+    if (!state.countries.length) {
+      body.innerHTML = '<tr class="empty-row"><td colspan="4">Немає записів</td></tr>';
+      return;
+    }
+    body.innerHTML = state.countries.map(c => `
+    <tr>
+      <td>${c.id}</td>
+      <td>${escapeHtml(c.countryName)}</td>
+      <td>${escapeHtml(c.continent)}</td>
+      <td class="actions">
+        <button class="btn-sm edit" onclick="editCountry(${c.id})">Редагувати</button>
+        <button class="btn-sm delete" onclick="deleteEntity('country', ${c.id})">Видалити</button>
+      </td>
+    </tr>`).join('');
+  }
+
+  document.getElementById('country-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('country-id').value;
+    const payload = {
+      countryName: document.getElementById('country-name').value.trim(),
+      continent: document.getElementById('country-continent').value.trim(),
+    };
+    await saveEntity('country', id, payload);
+  });
+
+  function editCountry(id) {
+    const c = findById(state.countries, id);
+    if (!c) return;
+    document.getElementById('country-id').value = c.id;
+    document.getElementById('country-name').value = c.countryName;
+    document.getElementById('country-continent').value = c.continent;
+    document.getElementById('country-form-title').textContent = 'Редагування країни #' + c.id;
+  }
+
+  /* ==================================================================
+     LEAGUES
+     ================================================================== */
+  function renderLeagues() {
+    const body = document.getElementById('league-table-body');
+    if (!state.leagues.length) {
+      body.innerHTML = '<tr class="empty-row"><td colspan="5">Немає записів</td></tr>';
+      return;
+    }
+    body.innerHTML = state.leagues.map(l => {
+      const clubsCount = state.clubs.filter(c => String(c.leagueId) === String(l.id)).length;
+      return `
+    <tr>
+      <td>${l.id}</td>
+      <td>${escapeHtml(l.leagueName)}</td>
+      <td>${nameOrDash(state.countries, l.countryId, c => escapeHtml(c.countryName))}</td>
+      <td>${clubsCount}</td>
+      <td class="actions">
+        <button class="btn-sm edit" onclick="editLeague(${l.id})">Редагувати</button>
+        <button class="btn-sm delete" onclick="deleteEntity('league', ${l.id})">Видалити</button>
+      </td>
+    </tr>`;
+    }).join('');
+  }
+
+  document.getElementById('league-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('league-id').value;
+    const payload = {
+      leagueName: document.getElementById('league-name').value.trim(),
+      countryId: Number(document.getElementById('league-country').value),
+      clubs: [],
+    };
+    await saveEntity('league', id, payload);
+  });
+
+  function editLeague(id) {
+    const l = findById(state.leagues, id);
+    if (!l) return;
+    document.getElementById('league-id').value = l.id;
+    document.getElementById('league-name').value = l.leagueName;
+    document.getElementById('league-country').value = l.countryId;
+    document.getElementById('league-form-title').textContent = 'Редагування ліги #' + l.id;
+  }
+
+  /* ==================================================================
+     CLUBS
+     ================================================================== */
+  function renderClubs() {
+    const body = document.getElementById('club-table-body');
+    if (!state.clubs.length) {
+      body.innerHTML = '<tr class="empty-row"><td colspan="6">Немає записів</td></tr>';
+      return;
+    }
+    body.innerHTML = state.clubs.map(c => {
+      const manager = state.managers.find(m => String(m.clubId) === String(c.id));
+      const playersCount = state.players.filter(p => String(p.clubId) === String(c.id)).length;
+      return `
+    <tr>
+      <td>${c.id}</td>
+      <td>${escapeHtml(c.clubName)}</td>
+      <td>${nameOrDash(state.leagues, c.leagueId, l => escapeHtml(l.leagueName))}</td>
+      <td>${manager ? escapeHtml(manager.managerName) : '<span class="badge">—</span>'}</td>
+      <td>${playersCount}</td>
+      <td class="actions">
+        <button class="btn-sm edit" onclick="editClub(${c.id})">Редагувати</button>
+        <button class="btn-sm delete" onclick="deleteEntity('club', ${c.id})">Видалити</button>
+      </td>
+    </tr>`;
+    }).join('');
+  }
+
+  document.getElementById('club-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('club-id').value;
+    const payload = {
+      clubName: document.getElementById('club-name').value.trim(),
+      leagueId: Number(document.getElementById('club-league').value),
+    };
+    await saveEntity('club', id, payload);
+  });
+
+  function editClub(id) {
+    const c = findById(state.clubs, id);
+    if (!c) return;
+    document.getElementById('club-id').value = c.id;
+    document.getElementById('club-name').value = c.clubName;
+    document.getElementById('club-league').value = c.leagueId;
+    document.getElementById('club-form-title').textContent = 'Редагування клубу #' + c.id;
+  }
+
+  /* ==================================================================
+     MANAGERS
+     ================================================================== */
+  function renderManagers() {
+    const body = document.getElementById('manager-table-body');
+    if (!state.managers.length) {
+      body.innerHTML = '<tr class="empty-row"><td colspan="6">Немає записів</td></tr>';
+      return;
+    }
+    body.innerHTML = state.managers.map(m => `
+    <tr>
+      <td>${m.id}</td>
+      <td>${escapeHtml(m.managerName)}</td>
+      <td>${m.managerAge}</td>
+      <td>${nameOrDash(state.countries, m.countryId, c => escapeHtml(c.countryName))}</td>
+      <td>${nameOrDash(state.clubs, m.clubId, c => escapeHtml(c.clubName))}</td>
+      <td class="actions">
+        <button class="btn-sm edit" onclick="editManager(${m.id})">Редагувати</button>
+        <button class="btn-sm delete" onclick="deleteEntity('manager', ${m.id})">Видалити</button>
+      </td>
+    </tr>`).join('');
+  }
+
+  document.getElementById('manager-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('manager-id').value;
+    const clubValue = document.getElementById('manager-club').value;
+    const payload = {
+      managerName: document.getElementById('manager-name').value.trim(),
+      managerAge: Number(document.getElementById('manager-age').value),
+      countryId: Number(document.getElementById('manager-country').value),
+      clubId: clubValue ? Number(clubValue) : null,
+    };
+    await saveEntity('manager', id, payload);
+  });
+
+  function editManager(id) {
+    const m = findById(state.managers, id);
+    if (!m) return;
+    document.getElementById('manager-id').value = m.id;
+    document.getElementById('manager-name').value = m.managerName;
+    document.getElementById('manager-age').value = m.managerAge;
+    document.getElementById('manager-country').value = m.countryId;
+    document.getElementById('manager-club').value = m.clubId ?? '';
+    document.getElementById('manager-form-title').textContent = 'Редагування тренера #' + m.id;
+  }
+
+  /* ==================================================================
+     PLAYERS
+     ================================================================== */
+  function renderPlayers() {
+    const body = document.getElementById('player-table-body');
+    if (!state.players.length) {
+      body.innerHTML = '<tr class="empty-row"><td colspan="7">Немає записів</td></tr>';
+      return;
+    }
+    body.innerHTML = state.players.map(p => `
+    <tr>
+      <td>${p.id}</td>
+      <td>${escapeHtml(p.playerName)}</td>
+      <td>${p.age}</td>
+      <td>${p.goals}</td>
+      <td>${nameOrDash(state.countries, p.countryId, c => escapeHtml(c.countryName))}</td>
+      <td>${nameOrDash(state.clubs, p.clubId, c => escapeHtml(c.clubName))}</td>
+      <td class="actions">
+        <button class="btn-sm edit" onclick="editPlayer(${p.id})">Редагувати</button>
+        <button class="btn-sm delete" onclick="deleteEntity('player', ${p.id})">Видалити</button>
+      </td>
+    </tr>`).join('');
+  }
+
+  document.getElementById('player-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('player-id').value;
+    const clubValue = document.getElementById('player-club').value;
+    const payload = {
+      playerName: document.getElementById('player-name').value.trim(),
+      age: Number(document.getElementById('player-age').value),
+      goals: Number(document.getElementById('player-goals').value),
+      countryId: Number(document.getElementById('player-country').value),
+      clubId: clubValue ? Number(clubValue) : null,
+    };
+    await saveEntity('player', id, payload);
+  });
+
+  function editPlayer(id) {
+    const p = findById(state.players, id);
+    if (!p) return;
+    document.getElementById('player-id').value = p.id;
+    document.getElementById('player-name').value = p.playerName;
+    document.getElementById('player-age').value = p.age;
+    document.getElementById('player-goals').value = p.goals;
+    document.getElementById('player-country').value = p.countryId;
+    document.getElementById('player-club').value = p.clubId ?? '';
+    document.getElementById('player-form-title').textContent = 'Редагування гравця #' + p.id;
+  }
+
+  /* ==================================================================
+     SHARED save / delete / reset
+     ================================================================== */
+  const ENTITY_CONFIG = {
+    country: { path: '/countries', label: 'Країну' },
+    league:  { path: '/leagues',   label: 'Лігу' },
+    club:    { path: '/clubs',     label: 'Клуб' },
+    manager: { path: '/managers',  label: 'Тренера' },
+    player:  { path: '/players',   label: 'Гравця' },
+  };
+
+  async function saveEntity(entity, id, payload) {
+    const cfg = ENTITY_CONFIG[entity];
+    try {
+      if (id) {
+        await apiFetch(cfg.path + '/' + id, { method: 'PUT', body: JSON.stringify(payload) });
+        showMessage(cfg.label + ' оновлено', 'success');
+      } else {
+        await apiFetch(cfg.path, { method: 'POST', body: JSON.stringify(payload) });
+        showMessage(cfg.label + ' створено', 'success');
+      }
+      resetForm(entity);
+      await loadAll();
+    } catch (e) {
+      showMessage(e.message, 'error');
+    }
+  }
+
+  async function deleteEntity(entity, id) {
+    const cfg = ENTITY_CONFIG[entity];
+    if (!confirm('Видалити запис #' + id + '?')) return;
+    try {
+      await apiFetch(cfg.path + '/' + id, { method: 'DELETE' });
+      showMessage(cfg.label + ' видалено', 'success');
+      await loadAll();
+    } catch (e) {
+      showMessage(e.message, 'error');
+    }
+  }
+
+  function resetForm(entity) {
+    document.getElementById(entity + '-form').reset();
+    document.getElementById(entity + '-id').value = '';
+    const titles = {
+      country: 'Нова країна',
+      league: 'Нова ліга',
+      club: 'Новий клуб',
+      manager: 'Новий тренер',
+      player: 'Новий гравець',
+    };
+    document.getElementById(entity + '-form-title').textContent = titles[entity];
+  }
+
+  function escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;');
+  }
+
+  /* ==================================================================
+   STARTUP: Забираємо токен із нашого бекенду
+   ================================================================== */
+  async function initSession() {
+    try {
+      const res = await fetch('/auth/token');
+
+      if (!res.ok) {
+        document.body.innerHTML = `<div style="padding:40px; text-align:center;">
+            <h2>Помилка сервера ${res.status}</h2>
+            <button class="btn" onclick="window.location.href='/oauth2/authorization/keycloak'">Авторизуватись</button>
+        </div>`;
+        return;
+      }
+
+      const data = await res.json();
+
+      // ЖОДНИХ АВТОМАТИЧНИХ РЕДИРЕКТІВ! Зупиняємось і дивимось, у чому біда.
+      if (!data.authenticated || !data.token) {
+        console.error("Проблема з токеном:", data.error);
+        document.body.innerHTML = `<div style="padding:40px; text-align:center;">
+            <h2>Сесію відхилено 🚨</h2>
+            <p style="color:var(--danger)">Причина: <b>${data.error || 'невідомо'}</b></p>
+            <button class="btn" onclick="window.location.href='/oauth2/authorization/keycloak'">Спробувати ще раз</button>
+        </div>`;
+        return;
+      }
+
+      // Якщо все супер - запускаємо додаток
+      ACCESS_TOKEN = data.token;
+      document.getElementById('user-info').innerText = data.username;
+      document.getElementById('main-content').style.display = 'block';
+
+      await loadAll();
+    } catch (e) {
+      document.body.innerHTML = `<h2 style="padding:40px; text-align:center;">Критична помилка JS: ${e.message}</h2>`;
+    }
+  }
+
+  // Запускаємо перевірку сесії
+  initSession();
+</script>
+
+</body>
+</html>
