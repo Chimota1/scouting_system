@@ -62,16 +62,12 @@ class ClubServiceTest {
         clubDto.setLeagueId(5L);
     }
 
-    // ---------- create ----------
-
     @Test
     @DisplayName("create_validInputWithoutManager_returnsSavedDto")
     void create_validInputWithoutManager_returnsSavedDto() {
-        // Arrange
         ClubDto inputDto = new ClubDto();
         inputDto.setClubName("Dynamo");
         inputDto.setLeagueId(5L);
-        // manager відсутній
 
         Club entityToSave = new Club();
         entityToSave.setClubName("Dynamo");
@@ -81,10 +77,8 @@ class ClubServiceTest {
         when(clubRepository.save(entityToSave)).thenReturn(club);
         when(clubMapper.toDto(club)).thenReturn(clubDto);
 
-        // Act
         ClubDto result = clubService.create(inputDto);
 
-        // Assert
         assertNotNull(result);
         assertEquals("Dynamo", result.getClubName());
         verify(managerRepository, never()).save(any());
@@ -94,7 +88,6 @@ class ClubServiceTest {
     @Test
     @DisplayName("create_nonExistingLeagueId_throwsEntityNotFoundException")
     void create_nonExistingLeagueId_throwsEntityNotFoundException() {
-        // Arrange
         ClubDto inputDto = new ClubDto();
         inputDto.setClubName("Dynamo");
         inputDto.setLeagueId(999L);
@@ -102,7 +95,6 @@ class ClubServiceTest {
         when(clubMapper.toEntity(inputDto)).thenReturn(new Club());
         when(leagueRepository.findById(999L)).thenReturn(Optional.empty());
 
-        // Act & Assert
         EntityNotFoundException ex = assertThrows(EntityNotFoundException.class,
                 () -> clubService.create(inputDto));
         assertTrue(ex.getMessage().contains("999"));
@@ -113,7 +105,6 @@ class ClubServiceTest {
     @Test
     @DisplayName("create_withValidManagerId_assignsManagerToClubAndSavesManager")
     void create_withValidManagerId_assignsManagerToClubAndSavesManager() {
-        // Arrange
         ManagerDto managerDto = new ManagerDto();
         managerDto.setId(7L);
 
@@ -135,24 +126,19 @@ class ClubServiceTest {
         when(managerRepository.findById(7L)).thenReturn(Optional.of(manager));
         when(clubMapper.toDto(club)).thenReturn(clubDto);
 
-        // Act
         ClubDto result = clubService.create(inputDto);
 
-        // Assert
         assertNotNull(result);
 
-        // AC7: перевіряємо побічний ефект — виклик save() менеджера з правильним прив'язаним клубом
         ArgumentCaptor<Manager> managerCaptor = ArgumentCaptor.forClass(Manager.class);
         verify(managerRepository).save(managerCaptor.capture());
         assertEquals(club, managerCaptor.getValue().getClub());
-        // клубу теж призначено менеджера
         assertEquals(manager, club.getManager());
     }
 
     @Test
     @DisplayName("create_withNonExistingManagerId_throwsEntityNotFoundException")
     void create_withNonExistingManagerId_throwsEntityNotFoundException() {
-        // Arrange
         ManagerDto managerDto = new ManagerDto();
         managerDto.setId(404L);
 
@@ -168,24 +154,19 @@ class ClubServiceTest {
         when(clubRepository.save(entityToSave)).thenReturn(club);
         when(managerRepository.findById(404L)).thenReturn(Optional.empty());
 
-        // Act & Assert
         assertThrows(EntityNotFoundException.class, () -> clubService.create(inputDto));
         verify(managerRepository, never()).save(any());
     }
 
-    // ---------- getAll ----------
 
     @Test
     @DisplayName("getAll_clubsExist_returnsMappedDtoList")
     void getAll_clubsExist_returnsMappedDtoList() {
-        // Arrange
         when(clubRepository.findAll()).thenReturn(List.of(club));
         when(clubMapper.toDto(club)).thenReturn(clubDto);
 
-        // Act
         List<ClubDto> result = clubService.getAll();
 
-        // Assert
         assertEquals(1, result.size());
         assertEquals("Dynamo", result.get(0).getClubName());
     }
@@ -193,49 +174,36 @@ class ClubServiceTest {
     @Test
     @DisplayName("getAll_noClubs_returnsEmptyList")
     void getAll_noClubs_returnsEmptyList() {
-        // Arrange
         when(clubRepository.findAll()).thenReturn(List.of());
 
-        // Act
         List<ClubDto> result = clubService.getAll();
 
-        // Assert
         assertTrue(result.isEmpty());
     }
-
-    // ---------- getById ----------
 
     @Test
     @DisplayName("getById_existingId_returnsDto")
     void getById_existingId_returnsDto() {
-        // Arrange
         when(clubRepository.findById(1L)).thenReturn(Optional.of(club));
         when(clubMapper.toDto(club)).thenReturn(clubDto);
 
-        // Act
         ClubDto result = clubService.getById(1L);
 
-        // Assert
         assertEquals(1L, result.getId());
     }
 
     @Test
     @DisplayName("getById_nonExistingId_throwsEntityNotFoundException")
     void getById_nonExistingId_throwsEntityNotFoundException() {
-        // Arrange
         when(clubRepository.findById(2L)).thenReturn(Optional.empty());
 
-        // Act & Assert
         assertThrows(EntityNotFoundException.class, () -> clubService.getById(2L));
         verify(clubMapper, never()).toDto(any());
     }
 
-    // ---------- update ----------
-
     @Test
     @DisplayName("update_existingClubAndLeague_updatesAndReturnsDto")
     void update_existingClubAndLeague_updatesAndReturnsDto() {
-        // Arrange
         ClubDto updateDto = new ClubDto();
         updateDto.setClubName("Shakhtar");
         updateDto.setLeagueId(5L);
@@ -255,10 +223,8 @@ class ClubServiceTest {
         when(clubRepository.save(club)).thenReturn(updated);
         when(clubMapper.toDto(updated)).thenReturn(expected);
 
-        // Act
         ClubDto result = clubService.update(1L, updateDto);
 
-        // Assert
         assertEquals("Shakhtar", result.getClubName());
 
         ArgumentCaptor<Club> captor = ArgumentCaptor.forClass(Club.class);
@@ -269,10 +235,8 @@ class ClubServiceTest {
     @Test
     @DisplayName("update_nonExistingClubId_throwsEntityNotFoundException")
     void update_nonExistingClubId_throwsEntityNotFoundException() {
-        // Arrange
         when(clubRepository.findById(9L)).thenReturn(Optional.empty());
 
-        // Act & Assert
         assertThrows(EntityNotFoundException.class, () -> clubService.update(9L, clubDto));
         verify(clubRepository, never()).save(any());
     }
@@ -280,7 +244,6 @@ class ClubServiceTest {
     @Test
     @DisplayName("update_nonExistingLeagueId_throwsEntityNotFoundException")
     void update_nonExistingLeagueId_throwsEntityNotFoundException() {
-        // Arrange
         ClubDto updateDto = new ClubDto();
         updateDto.setClubName("Shakhtar");
         updateDto.setLeagueId(600L);
@@ -288,33 +251,26 @@ class ClubServiceTest {
         when(clubRepository.findById(1L)).thenReturn(Optional.of(club));
         when(leagueRepository.findById(600L)).thenReturn(Optional.empty());
 
-        // Act & Assert
         assertThrows(EntityNotFoundException.class, () -> clubService.update(1L, updateDto));
         verify(clubRepository, never()).save(any());
     }
 
-    // ---------- delete ----------
 
     @Test
     @DisplayName("delete_existingId_deletesEntity")
     void delete_existingId_deletesEntity() {
-        // Arrange
         when(clubRepository.existsById(1L)).thenReturn(true);
 
-        // Act
         clubService.delete(1L);
 
-        // Assert
         verify(clubRepository).deleteById(1L);
     }
 
     @Test
     @DisplayName("delete_nonExistingId_throwsEntityNotFoundException")
     void delete_nonExistingId_throwsEntityNotFoundException() {
-        // Arrange
         when(clubRepository.existsById(123L)).thenReturn(false);
 
-        // Act & Assert
         assertThrows(EntityNotFoundException.class, () -> clubService.delete(123L));
         verify(clubRepository, never()).deleteById(any());
     }

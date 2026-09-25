@@ -68,12 +68,9 @@ class ManagerServiceTest {
         managerDto.setCountryId(3L);
     }
 
-    // ---------- create ----------
-
     @Test
     @DisplayName("create_validInputWithClub_returnsSavedDto")
     void create_validInputWithClub_returnsSavedDto() {
-        // Arrange
         ManagerDto inputDto = new ManagerDto();
         inputDto.setManagerName("Coach");
         inputDto.setManagerAge(45);
@@ -90,10 +87,8 @@ class ManagerServiceTest {
         when(managerRepository.save(entityToSave)).thenReturn(manager);
         when(managerMapper.toDto(manager)).thenReturn(managerDto);
 
-        // Act
         ManagerDto result = managerService.create(inputDto);
 
-        // Assert
         assertNotNull(result);
         assertEquals("Coach", result.getManagerName());
 
@@ -106,7 +101,6 @@ class ManagerServiceTest {
     @Test
     @DisplayName("create_validInputWithoutClub_setsClubToNull")
     void create_validInputWithoutClub_setsClubToNull() {
-        // Arrange
         ManagerDto inputDto = new ManagerDto();
         inputDto.setManagerName("Coach");
         inputDto.setManagerAge(45);
@@ -120,10 +114,8 @@ class ManagerServiceTest {
         when(managerRepository.save(entityToSave)).thenReturn(manager);
         when(managerMapper.toDto(manager)).thenReturn(managerDto);
 
-        // Act
         managerService.create(inputDto);
 
-        // Assert
         ArgumentCaptor<Manager> captor = ArgumentCaptor.forClass(Manager.class);
         verify(managerRepository).save(captor.capture());
         assertNull(captor.getValue().getClub());
@@ -133,14 +125,12 @@ class ManagerServiceTest {
     @Test
     @DisplayName("create_nonExistingCountryId_throwsEntityNotFoundException")
     void create_nonExistingCountryId_throwsEntityNotFoundException() {
-        // Arrange
         ManagerDto inputDto = new ManagerDto();
         inputDto.setCountryId(999L);
 
         when(managerMapper.toEntity(inputDto)).thenReturn(new Manager());
         when(countryRepository.findById(999L)).thenReturn(Optional.empty());
 
-        // Act & Assert
         EntityNotFoundException ex = assertThrows(EntityNotFoundException.class,
                 () -> managerService.create(inputDto));
         assertTrue(ex.getMessage().contains("999"));
@@ -151,7 +141,6 @@ class ManagerServiceTest {
     @Test
     @DisplayName("create_nonExistingClubId_throwsEntityNotFoundException")
     void create_nonExistingClubId_throwsEntityNotFoundException() {
-        // Arrange
         ManagerDto inputDto = new ManagerDto();
         inputDto.setCountryId(3L);
         inputDto.setClubId(404L);
@@ -160,24 +149,18 @@ class ManagerServiceTest {
         when(countryRepository.findById(3L)).thenReturn(Optional.of(country));
         when(clubRepository.findById(404L)).thenReturn(Optional.empty());
 
-        // Act & Assert
         assertThrows(EntityNotFoundException.class, () -> managerService.create(inputDto));
         verify(managerRepository, never()).save(any());
     }
 
-    // ---------- getAll ----------
-
     @Test
     @DisplayName("getAll_managersExist_returnsMappedDtoList")
     void getAll_managersExist_returnsMappedDtoList() {
-        // Arrange
         when(managerRepository.findAll()).thenReturn(List.of(manager));
         when(managerMapper.toDto(manager)).thenReturn(managerDto);
 
-        // Act
         List<ManagerDto> result = managerService.getAll();
 
-        // Assert
         assertEquals(1, result.size());
         assertEquals("Coach", result.get(0).getManagerName());
     }
@@ -185,49 +168,36 @@ class ManagerServiceTest {
     @Test
     @DisplayName("getAll_noManagers_returnsEmptyList")
     void getAll_noManagers_returnsEmptyList() {
-        // Arrange
         when(managerRepository.findAll()).thenReturn(List.of());
 
-        // Act
         List<ManagerDto> result = managerService.getAll();
 
-        // Assert
         assertTrue(result.isEmpty());
     }
-
-    // ---------- getById ----------
 
     @Test
     @DisplayName("getById_existingId_returnsDto")
     void getById_existingId_returnsDto() {
-        // Arrange
         when(managerRepository.findById(1L)).thenReturn(Optional.of(manager));
         when(managerMapper.toDto(manager)).thenReturn(managerDto);
 
-        // Act
         ManagerDto result = managerService.getById(1L);
 
-        // Assert
         assertEquals(1L, result.getId());
     }
 
     @Test
     @DisplayName("getById_nonExistingId_throwsEntityNotFoundException")
     void getById_nonExistingId_throwsEntityNotFoundException() {
-        // Arrange
         when(managerRepository.findById(2L)).thenReturn(Optional.empty());
 
-        // Act & Assert
         assertThrows(EntityNotFoundException.class, () -> managerService.getById(2L));
         verify(managerMapper, never()).toDto(any());
     }
 
-    // ---------- update ----------
-
     @Test
     @DisplayName("update_existingId_updatesFieldsAndRelationsAndReturnsDto")
     void update_existingId_updatesFieldsAndRelationsAndReturnsDto() {
-        // Arrange
         ManagerDto updateDto = new ManagerDto();
         updateDto.setManagerName("New Coach");
         updateDto.setManagerAge(50);
@@ -250,10 +220,8 @@ class ManagerServiceTest {
         when(managerRepository.save(manager)).thenReturn(updated);
         when(managerMapper.toDto(updated)).thenReturn(expected);
 
-        // Act
         ManagerDto result = managerService.update(1L, updateDto);
 
-        // Assert
         assertEquals("New Coach", result.getManagerName());
         assertEquals(50, result.getManagerAge());
 
@@ -267,36 +235,27 @@ class ManagerServiceTest {
     @Test
     @DisplayName("update_nonExistingId_throwsEntityNotFoundException")
     void update_nonExistingId_throwsEntityNotFoundException() {
-        // Arrange
         when(managerRepository.findById(15L)).thenReturn(Optional.empty());
 
-        // Act & Assert
         assertThrows(EntityNotFoundException.class, () -> managerService.update(15L, managerDto));
         verify(managerRepository, never()).save(any());
     }
 
-    // ---------- delete ----------
-
     @Test
     @DisplayName("delete_existingId_deletesEntity")
     void delete_existingId_deletesEntity() {
-        // Arrange
         when(managerRepository.existsById(1L)).thenReturn(true);
 
-        // Act
         managerService.delete(1L);
 
-        // Assert
         verify(managerRepository).deleteById(1L);
     }
 
     @Test
     @DisplayName("delete_nonExistingId_throwsEntityNotFoundException")
     void delete_nonExistingId_throwsEntityNotFoundException() {
-        // Arrange
         when(managerRepository.existsById(66L)).thenReturn(false);
 
-        // Act & Assert
         assertThrows(EntityNotFoundException.class, () -> managerService.delete(66L));
         verify(managerRepository, never()).deleteById(any());
     }

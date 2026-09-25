@@ -23,7 +23,6 @@ public class AuthInfoController {
             return Map.of("authenticated", false, "error", "Немає сесії в Spring Security");
         }
 
-        // Витягуємо токен прямо з прив'язаної HTTP-сесії браузера
         OAuth2AuthorizedClient client = authorizedClientRepository.loadAuthorizedClient(
                 authentication.getAuthorizedClientRegistrationId(),
                 authentication,

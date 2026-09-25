@@ -49,8 +49,6 @@ class CountryServiceTest {
         countryDto.setContinent("Europe");
     }
 
-    // ---------- create ----------
-
     @Test
     @DisplayName("create_validInput_returnsSavedDto")
     void create_validInput_returnsSavedDto() {
@@ -78,8 +76,6 @@ class CountryServiceTest {
         assertEquals("Europe", captor.getValue().getContinent());
     }
 
-    // ---------- getAll ----------
-
     @Test
     @DisplayName("getAll_countriesExist_returnsMappedDtoList")
     void getAll_countriesExist_returnsMappedDtoList() {
@@ -102,8 +98,6 @@ class CountryServiceTest {
 
         assertTrue(result.isEmpty());
     }
-
-    // ---------- getById ----------
 
     @Test
     @DisplayName("getById_existingId_returnsDto")
@@ -128,12 +122,9 @@ class CountryServiceTest {
         verify(countryMapper, never()).toDto(any());
     }
 
-    // ---------- update ----------
-
     @Test
     @DisplayName("update_existingId_updatesFieldsAndReturnsDto")
     void update_existingId_updatesFieldsAndReturnsDto() {
-        // Arrange
         CountryDto updateDto = new CountryDto();
         updateDto.setCountryName("Poland");
         updateDto.setContinent("Europe");
@@ -152,10 +143,8 @@ class CountryServiceTest {
         when(countryRepository.save(country)).thenReturn(updatedEntity);
         when(countryMapper.toDto(updatedEntity)).thenReturn(expectedDto);
 
-        // Act
         CountryDto result = countryService.update(1L, updateDto);
 
-        // Assert
         assertEquals("Poland", result.getCountryName());
 
         ArgumentCaptor<Country> captor = ArgumentCaptor.forClass(Country.class);
@@ -175,8 +164,6 @@ class CountryServiceTest {
 
         verify(countryRepository, never()).save(any());
     }
-
-    // ---------- delete ----------
 
     @Test
     @DisplayName("delete_existingId_deletesEntity")

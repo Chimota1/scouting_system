@@ -70,12 +70,9 @@ class PlayerServiceTest {
         playerDto.setCountryId(3L);
     }
 
-    // ---------- create ----------
-
     @Test
     @DisplayName("create_validInputWithClub_returnsSavedDto")
     void create_validInputWithClub_returnsSavedDto() {
-        // Arrange
         PlayerDto inputDto = new PlayerDto();
         inputDto.setPlayerName("Andriy");
         inputDto.setAge(25);
@@ -94,10 +91,8 @@ class PlayerServiceTest {
         when(playerRepository.save(entityToSave)).thenReturn(player);
         when(playerMapper.toDto(player)).thenReturn(playerDto);
 
-        // Act
         PlayerDto result = playerService.create(inputDto);
 
-        // Assert
         assertNotNull(result);
         assertEquals("Andriy", result.getPlayerName());
         assertEquals(10, result.getGoals());
@@ -111,7 +106,6 @@ class PlayerServiceTest {
     @Test
     @DisplayName("create_validInputWithoutClub_setsClubToNull")
     void create_validInputWithoutClub_setsClubToNull() {
-        // Arrange
         PlayerDto inputDto = new PlayerDto();
         inputDto.setPlayerName("Andriy");
         inputDto.setAge(25);
@@ -126,10 +120,8 @@ class PlayerServiceTest {
         when(playerRepository.save(entityToSave)).thenReturn(player);
         when(playerMapper.toDto(player)).thenReturn(playerDto);
 
-        // Act
         playerService.create(inputDto);
 
-        // Assert
         ArgumentCaptor<Player> captor = ArgumentCaptor.forClass(Player.class);
         verify(playerRepository).save(captor.capture());
         assertNull(captor.getValue().getClub());
@@ -139,14 +131,12 @@ class PlayerServiceTest {
     @Test
     @DisplayName("create_nonExistingCountryId_throwsEntityNotFoundException")
     void create_nonExistingCountryId_throwsEntityNotFoundException() {
-        // Arrange
         PlayerDto inputDto = new PlayerDto();
         inputDto.setCountryId(999L);
 
         when(playerMapper.toEntity(inputDto)).thenReturn(new Player());
         when(countryRepository.findById(999L)).thenReturn(Optional.empty());
 
-        // Act & Assert
         EntityNotFoundException ex = assertThrows(EntityNotFoundException.class,
                 () -> playerService.create(inputDto));
         assertTrue(ex.getMessage().contains("999"));
@@ -157,7 +147,6 @@ class PlayerServiceTest {
     @Test
     @DisplayName("create_nonExistingClubId_throwsEntityNotFoundException")
     void create_nonExistingClubId_throwsEntityNotFoundException() {
-        // Arrange
         PlayerDto inputDto = new PlayerDto();
         inputDto.setCountryId(3L);
         inputDto.setClubId(404L);
@@ -166,24 +155,19 @@ class PlayerServiceTest {
         when(countryRepository.findById(3L)).thenReturn(Optional.of(country));
         when(clubRepository.findById(404L)).thenReturn(Optional.empty());
 
-        // Act & Assert
         assertThrows(EntityNotFoundException.class, () -> playerService.create(inputDto));
         verify(playerRepository, never()).save(any());
     }
 
-    // ---------- getAll ----------
 
     @Test
     @DisplayName("getAll_playersExist_returnsMappedDtoList")
     void getAll_playersExist_returnsMappedDtoList() {
-        // Arrange
         when(playerRepository.findAll()).thenReturn(List.of(player));
         when(playerMapper.toDto(player)).thenReturn(playerDto);
 
-        // Act
         List<PlayerDto> result = playerService.getAll();
 
-        // Assert
         assertEquals(1, result.size());
         assertEquals("Andriy", result.get(0).getPlayerName());
     }
@@ -191,49 +175,36 @@ class PlayerServiceTest {
     @Test
     @DisplayName("getAll_noPlayers_returnsEmptyList")
     void getAll_noPlayers_returnsEmptyList() {
-        // Arrange
         when(playerRepository.findAll()).thenReturn(List.of());
 
-        // Act
         List<PlayerDto> result = playerService.getAll();
 
-        // Assert
         assertTrue(result.isEmpty());
     }
-
-    // ---------- getById ----------
 
     @Test
     @DisplayName("getById_existingId_returnsDto")
     void getById_existingId_returnsDto() {
-        // Arrange
         when(playerRepository.findById(1L)).thenReturn(Optional.of(player));
         when(playerMapper.toDto(player)).thenReturn(playerDto);
 
-        // Act
         PlayerDto result = playerService.getById(1L);
 
-        // Assert
         assertEquals(1L, result.getId());
     }
 
     @Test
     @DisplayName("getById_nonExistingId_throwsEntityNotFoundException")
     void getById_nonExistingId_throwsEntityNotFoundException() {
-        // Arrange
         when(playerRepository.findById(2L)).thenReturn(Optional.empty());
 
-        // Act & Assert
         assertThrows(EntityNotFoundException.class, () -> playerService.getById(2L));
         verify(playerMapper, never()).toDto(any());
     }
 
-    // ---------- update ----------
-
     @Test
     @DisplayName("update_existingId_updatesFieldsAndRelationsAndReturnsDto")
     void update_existingId_updatesFieldsAndRelationsAndReturnsDto() {
-        // Arrange
         PlayerDto updateDto = new PlayerDto();
         updateDto.setPlayerName("Oleh");
         updateDto.setAge(30);
@@ -259,10 +230,8 @@ class PlayerServiceTest {
         when(playerRepository.save(player)).thenReturn(updated);
         when(playerMapper.toDto(updated)).thenReturn(expected);
 
-        // Act
         PlayerDto result = playerService.update(1L, updateDto);
 
-        // Assert
         assertEquals("Oleh", result.getPlayerName());
         assertEquals(20, result.getGoals());
 
@@ -277,36 +246,28 @@ class PlayerServiceTest {
     @Test
     @DisplayName("update_nonExistingId_throwsEntityNotFoundException")
     void update_nonExistingId_throwsEntityNotFoundException() {
-        // Arrange
+
         when(playerRepository.findById(15L)).thenReturn(Optional.empty());
 
-        // Act & Assert
         assertThrows(EntityNotFoundException.class, () -> playerService.update(15L, playerDto));
         verify(playerRepository, never()).save(any());
     }
 
-    // ---------- delete ----------
-
     @Test
     @DisplayName("delete_existingId_deletesEntity")
     void delete_existingId_deletesEntity() {
-        // Arrange
         when(playerRepository.existsById(1L)).thenReturn(true);
 
-        // Act
         playerService.delete(1L);
 
-        // Assert
         verify(playerRepository).deleteById(1L);
     }
 
     @Test
     @DisplayName("delete_nonExistingId_throwsEntityNotFoundException")
     void delete_nonExistingId_throwsEntityNotFoundException() {
-        // Arrange
         when(playerRepository.existsById(66L)).thenReturn(false);
 
-        // Act & Assert
         assertThrows(EntityNotFoundException.class, () -> playerService.delete(66L));
         verify(playerRepository, never()).deleteById(any());
     }

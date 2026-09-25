@@ -61,12 +61,9 @@ class LeagueServiceTest {
         leagueDto.setCountryId(10L);
     }
 
-    // ---------- create ----------
-
     @Test
     @DisplayName("create_validInput_returnsSavedDtoWithCountry")
     void create_validInput_returnsSavedDtoWithCountry() {
-        // Arrange
         LeagueDto inputDto = new LeagueDto();
         inputDto.setLeagueName("UPL");
         inputDto.setCountryId(10L);
@@ -79,10 +76,8 @@ class LeagueServiceTest {
         when(leagueRepository.save(entityToSave)).thenReturn(league);
         when(leagueMapper.toDto(league)).thenReturn(leagueDto);
 
-        // Act
         LeagueDto result = leagueService.create(inputDto);
 
-        // Assert
         assertNotNull(result);
         assertEquals("UPL", result.getLeagueName());
         assertEquals(10L, result.getCountryId());
@@ -95,7 +90,6 @@ class LeagueServiceTest {
     @Test
     @DisplayName("create_nonExistingCountryId_throwsEntityNotFoundException")
     void create_nonExistingCountryId_throwsEntityNotFoundException() {
-        // Arrange
         LeagueDto inputDto = new LeagueDto();
         inputDto.setLeagueName("UPL");
         inputDto.setCountryId(999L);
@@ -103,7 +97,6 @@ class LeagueServiceTest {
         when(leagueMapper.toEntity(inputDto)).thenReturn(new League());
         when(countryRepository.findById(999L)).thenReturn(Optional.empty());
 
-        // Act & Assert
         EntityNotFoundException ex = assertThrows(EntityNotFoundException.class,
                 () -> leagueService.create(inputDto));
         assertTrue(ex.getMessage().contains("999"));
@@ -111,19 +104,15 @@ class LeagueServiceTest {
         verify(leagueRepository, never()).save(any());
     }
 
-    // ---------- getAll ----------
 
     @Test
     @DisplayName("getAll_leaguesExist_returnsMappedDtoList")
     void getAll_leaguesExist_returnsMappedDtoList() {
-        // Arrange
         when(leagueRepository.findAll()).thenReturn(List.of(league));
         when(leagueMapper.toDto(league)).thenReturn(leagueDto);
 
-        // Act
         List<LeagueDto> result = leagueService.getAll();
 
-        // Assert
         assertEquals(1, result.size());
         assertEquals("UPL", result.get(0).getLeagueName());
     }
@@ -131,49 +120,36 @@ class LeagueServiceTest {
     @Test
     @DisplayName("getAll_noLeagues_returnsEmptyList")
     void getAll_noLeagues_returnsEmptyList() {
-        // Arrange
         when(leagueRepository.findAll()).thenReturn(List.of());
 
-        // Act
         List<LeagueDto> result = leagueService.getAll();
 
-        // Assert
         assertTrue(result.isEmpty());
     }
-
-    // ---------- getById ----------
 
     @Test
     @DisplayName("getById_existingId_returnsDto")
     void getById_existingId_returnsDto() {
-        // Arrange
         when(leagueRepository.findById(1L)).thenReturn(Optional.of(league));
         when(leagueMapper.toDto(league)).thenReturn(leagueDto);
 
-        // Act
         LeagueDto result = leagueService.getById(1L);
 
-        // Assert
         assertEquals(1L, result.getId());
     }
 
     @Test
     @DisplayName("getById_nonExistingId_throwsEntityNotFoundException")
     void getById_nonExistingId_throwsEntityNotFoundException() {
-        // Arrange
         when(leagueRepository.findById(404L)).thenReturn(Optional.empty());
 
-        // Act & Assert
         assertThrows(EntityNotFoundException.class, () -> leagueService.getById(404L));
         verify(leagueMapper, never()).toDto(any());
     }
 
-    // ---------- update ----------
-
     @Test
     @DisplayName("update_existingLeagueAndCountry_updatesAndReturnsDto")
     void update_existingLeagueAndCountry_updatesAndReturnsDto() {
-        // Arrange
         LeagueDto updateDto = new LeagueDto();
         updateDto.setLeagueName("La Liga");
         updateDto.setCountryId(10L);
@@ -193,10 +169,8 @@ class LeagueServiceTest {
         when(leagueRepository.save(league)).thenReturn(updated);
         when(leagueMapper.toDto(updated)).thenReturn(expected);
 
-        // Act
         LeagueDto result = leagueService.update(1L, updateDto);
 
-        // Assert
         assertEquals("La Liga", result.getLeagueName());
 
         ArgumentCaptor<League> captor = ArgumentCaptor.forClass(League.class);
@@ -208,10 +182,8 @@ class LeagueServiceTest {
     @Test
     @DisplayName("update_nonExistingLeagueId_throwsEntityNotFoundException")
     void update_nonExistingLeagueId_throwsEntityNotFoundException() {
-        // Arrange
         when(leagueRepository.findById(55L)).thenReturn(Optional.empty());
 
-        // Act & Assert
         assertThrows(EntityNotFoundException.class, () -> leagueService.update(55L, leagueDto));
         verify(leagueRepository, never()).save(any());
     }
@@ -219,7 +191,6 @@ class LeagueServiceTest {
     @Test
     @DisplayName("update_nonExistingCountryId_throwsEntityNotFoundException")
     void update_nonExistingCountryId_throwsEntityNotFoundException() {
-        // Arrange
         LeagueDto updateDto = new LeagueDto();
         updateDto.setLeagueName("La Liga");
         updateDto.setCountryId(500L);
@@ -227,33 +198,25 @@ class LeagueServiceTest {
         when(leagueRepository.findById(1L)).thenReturn(Optional.of(league));
         when(countryRepository.findById(500L)).thenReturn(Optional.empty());
 
-        // Act & Assert
         assertThrows(EntityNotFoundException.class, () -> leagueService.update(1L, updateDto));
         verify(leagueRepository, never()).save(any());
     }
 
-    // ---------- delete ----------
-
     @Test
     @DisplayName("delete_existingId_deletesEntity")
     void delete_existingId_deletesEntity() {
-        // Arrange
         when(leagueRepository.existsById(1L)).thenReturn(true);
 
-        // Act
         leagueService.delete(1L);
 
-        // Assert
         verify(leagueRepository).deleteById(1L);
     }
 
     @Test
     @DisplayName("delete_nonExistingId_throwsEntityNotFoundException")
     void delete_nonExistingId_throwsEntityNotFoundException() {
-        // Arrange
         when(leagueRepository.existsById(88L)).thenReturn(false);
 
-        // Act & Assert
         assertThrows(EntityNotFoundException.class, () -> leagueService.delete(88L));
         verify(leagueRepository, never()).deleteById(any());
     }

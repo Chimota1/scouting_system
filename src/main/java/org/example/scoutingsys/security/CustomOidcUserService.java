@@ -17,11 +17,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/**
- * Keycloak не кладе resource_access у ID token (тільки в access token),
- * тому GrantedAuthoritiesMapper, який читає ID token, нічого не знаходить.
- * Тут беремо access token напряму з OidcUserRequest і дістаємо ролі з нього.
- */
+
 @Component
 public class CustomOidcUserService extends OidcUserService {
 
