@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import org.example.scoutingsys.annotation.ValidIdReference;
 
 @Getter
 @Setter
@@ -15,7 +16,9 @@ public class PlayerDto {
     private Integer age;
     @NotNull(message = "Кількість голів є обов'язковою")
     private Integer goals;
+    @ValidIdReference
     private Long clubId;
     @NotNull(message = "Країна є обов'язковою")
+    @ValidIdReference
     private Long countryId;
 }

@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import org.example.scoutingsys.annotation.ValidIdReference;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,7 @@ public class LeagueDto {
     @NotBlank
     private String leagueName;
     @NotNull
+    @ValidIdReference
     private Long countryId;
     private List<ClubDto> clubs = new ArrayList<>();
 }
