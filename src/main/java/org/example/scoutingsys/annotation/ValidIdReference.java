@@ -2,6 +2,8 @@ package org.example.scoutingsys.annotation;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
+import org.example.scoutingsys.config.ValidIdReferenceValidator;
+
 import java.lang.annotation.*;
 
 @Target(ElementType.FIELD)

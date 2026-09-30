@@ -1,6 +1,7 @@
 package org.example.scoutingsys.controller;
 
 import jakarta.validation.Valid;
+import org.example.scoutingsys.annotation.AdminPostMapping;
 import org.example.scoutingsys.dto.LeagueDto;
 import org.example.scoutingsys.service.LeagueService;
 import org.springframework.http.ResponseEntity;
@@ -32,8 +33,7 @@ public class LeagueController {
         return ResponseEntity.ok(service.getById(id));
     }
 
-    @PostMapping
-    @PreAuthorize("hasRole('admin')")
+    @AdminPostMapping
     public ResponseEntity<LeagueDto> create(
             @Valid @RequestBody LeagueDto LeagueDto) {
 

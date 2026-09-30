@@ -1,6 +1,7 @@
 package org.example.scoutingsys.controller;
 
 import jakarta.validation.Valid;
+import org.example.scoutingsys.annotation.AdminPostMapping;
 import org.example.scoutingsys.dto.ClubDto;
 import org.example.scoutingsys.service.ClubService;
 import org.springframework.http.ResponseEntity;
@@ -32,8 +33,7 @@ public class ClubController {
         return ResponseEntity.ok(service.getById(id));
     }
 
-    @PostMapping
-    @PreAuthorize("hasRole('admin')")
+    @AdminPostMapping
     public ResponseEntity<ClubDto> create(
             @Valid @RequestBody ClubDto clubDto) {
 

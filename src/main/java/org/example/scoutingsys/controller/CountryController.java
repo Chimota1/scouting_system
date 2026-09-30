@@ -1,6 +1,7 @@
 package org.example.scoutingsys.controller;
 
 import jakarta.validation.Valid;
+import org.example.scoutingsys.annotation.AdminPostMapping;
 import org.example.scoutingsys.dto.CountryDto;
 import org.example.scoutingsys.service.CountryService;
 import org.springframework.http.ResponseEntity;
@@ -32,8 +33,7 @@ public class CountryController {
         return ResponseEntity.ok(service.getById(id));
     }
 
-    @PostMapping
-    @PreAuthorize("hasRole('admin')")
+    @AdminPostMapping
     public ResponseEntity<CountryDto> create(
             @Valid @RequestBody CountryDto CountryDto) {
 

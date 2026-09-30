@@ -1,7 +1,8 @@
-package org.example.scoutingsys.annotation;
+package org.example.scoutingsys.config;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+import org.example.scoutingsys.annotation.ValidIdReference;
 
 public class ValidIdReferenceValidator implements ConstraintValidator<ValidIdReference, Long> {
 
