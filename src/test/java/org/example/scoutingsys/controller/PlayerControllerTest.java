@@ -41,7 +41,7 @@ class PlayerControllerTest {
     }
 
     @Test
-    @DisplayName("getAll_playersExist_returnsOkWithList")
+    @DisplayName("getAll: повертає статус 200 OK та список гравців, якщо вони існують")
     void getAll_playersExist_returnsOkWithList() {
         when(playerService.getAll()).thenReturn(List.of(playerDto));
 
@@ -54,7 +54,7 @@ class PlayerControllerTest {
     }
 
     @Test
-    @DisplayName("getAll_noPlayers_returnsOkWithEmptyList")
+    @DisplayName("getAll: повертає статус 200 OK та порожній список, якщо гравців немає")
     void getAll_noPlayers_returnsOkWithEmptyList() {
         when(playerService.getAll()).thenReturn(List.of());
 
@@ -65,7 +65,7 @@ class PlayerControllerTest {
     }
 
     @Test
-    @DisplayName("getById_existingId_returnsOkWithDto")
+    @DisplayName("getById: повертає статус 200 OK та DTO гравця за існуючим ID")
     void getById_existingId_returnsOkWithDto() {
         when(playerService.getById(1L)).thenReturn(playerDto);
 
@@ -76,7 +76,7 @@ class PlayerControllerTest {
     }
 
     @Test
-    @DisplayName("getById_serviceThrowsNotFound_propagatesException")
+    @DisplayName("getById: прокидає EntityNotFoundException, якщо гравця не знайдено")
     void getById_serviceThrowsNotFound_propagatesException() {
         when(playerService.getById(2L)).thenThrow(new EntityNotFoundException("Гравець з ID 2 не знайдений"));
 
@@ -84,7 +84,7 @@ class PlayerControllerTest {
     }
 
     @Test
-    @DisplayName("create_validDto_returnsCreatedWithDto")
+    @DisplayName("create: успішно створює гравця та повертає статус 201 Created з DTO")
     void create_validDto_returnsCreatedWithDto() {
         PlayerDto inputDto = new PlayerDto();
         inputDto.setPlayerName("Andriy");
@@ -106,7 +106,7 @@ class PlayerControllerTest {
     }
 
     @Test
-    @DisplayName("update_validDto_returnsOkWithDto")
+    @DisplayName("update: успішно оновлює гравця та повертає статус 200 OK з оновленим DTO")
     void update_validDto_returnsOkWithDto() {
         PlayerDto updateDto = new PlayerDto();
         updateDto.setPlayerName("Oleh");
@@ -131,7 +131,7 @@ class PlayerControllerTest {
     }
 
     @Test
-    @DisplayName("update_serviceThrowsNotFound_propagatesException")
+    @DisplayName("update: прокидає EntityNotFoundException, якщо гравця для оновлення не знайдено")
     void update_serviceThrowsNotFound_propagatesException() {
         PlayerDto updateDto = new PlayerDto();
         when(playerService.update(15L, updateDto))
@@ -141,7 +141,7 @@ class PlayerControllerTest {
     }
 
     @Test
-    @DisplayName("delete_existingId_returnsNoContent")
+    @DisplayName("delete: повертає статус 204 No Content після успішного видалення гравця")
     void delete_existingId_returnsNoContent() {
         doNothing().when(playerService).delete(1L);
 
@@ -152,7 +152,7 @@ class PlayerControllerTest {
     }
 
     @Test
-    @DisplayName("delete_serviceThrowsNotFound_propagatesException")
+    @DisplayName("delete: прокидає EntityNotFoundException, якщо гравця для видалення не знайдено")
     void delete_serviceThrowsNotFound_propagatesException() {
         doThrow(new EntityNotFoundException("Гравець з ID 66 не знайдений"))
                 .when(playerService).delete(66L);

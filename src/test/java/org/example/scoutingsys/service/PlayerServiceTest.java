@@ -71,7 +71,7 @@ class PlayerServiceTest {
     }
 
     @Test
-    @DisplayName("create_validInputWithClub_returnsSavedDto")
+    @DisplayName("create: успішно створює гравця з прив'язкою до клубу та повертає збережений DTO")
     void create_validInputWithClub_returnsSavedDto() {
         PlayerDto inputDto = new PlayerDto();
         inputDto.setPlayerName("Andriy");
@@ -104,7 +104,7 @@ class PlayerServiceTest {
     }
 
     @Test
-    @DisplayName("create_validInputWithoutClub_setsClubToNull")
+    @DisplayName("create: успішно створює гравця без клубу (club встановлюється в null)")
     void create_validInputWithoutClub_setsClubToNull() {
         PlayerDto inputDto = new PlayerDto();
         inputDto.setPlayerName("Andriy");
@@ -129,7 +129,7 @@ class PlayerServiceTest {
     }
 
     @Test
-    @DisplayName("create_nonExistingCountryId_throwsEntityNotFoundException")
+    @DisplayName("create: викидає EntityNotFoundException, якщо країну з вказаним countryId не знайдено")
     void create_nonExistingCountryId_throwsEntityNotFoundException() {
         PlayerDto inputDto = new PlayerDto();
         inputDto.setCountryId(999L);
@@ -145,7 +145,7 @@ class PlayerServiceTest {
     }
 
     @Test
-    @DisplayName("create_nonExistingClubId_throwsEntityNotFoundException")
+    @DisplayName("create: викидає EntityNotFoundException, якщо клуб з вказаним clubId не знайдено")
     void create_nonExistingClubId_throwsEntityNotFoundException() {
         PlayerDto inputDto = new PlayerDto();
         inputDto.setCountryId(3L);
@@ -161,7 +161,7 @@ class PlayerServiceTest {
 
 
     @Test
-    @DisplayName("getAll_playersExist_returnsMappedDtoList")
+    @DisplayName("getAll: повертає список змаплених DTO, якщо гравці є в базі даних")
     void getAll_playersExist_returnsMappedDtoList() {
         when(playerRepository.findAll()).thenReturn(List.of(player));
         when(playerMapper.toDto(player)).thenReturn(playerDto);
@@ -173,7 +173,7 @@ class PlayerServiceTest {
     }
 
     @Test
-    @DisplayName("getAll_noPlayers_returnsEmptyList")
+    @DisplayName("getAll: повертає порожній список, якщо гравців немає")
     void getAll_noPlayers_returnsEmptyList() {
         when(playerRepository.findAll()).thenReturn(List.of());
 
@@ -183,7 +183,7 @@ class PlayerServiceTest {
     }
 
     @Test
-    @DisplayName("getById_existingId_returnsDto")
+    @DisplayName("getById: повертає DTO гравця за існуючим ID")
     void getById_existingId_returnsDto() {
         when(playerRepository.findById(1L)).thenReturn(Optional.of(player));
         when(playerMapper.toDto(player)).thenReturn(playerDto);
@@ -194,7 +194,7 @@ class PlayerServiceTest {
     }
 
     @Test
-    @DisplayName("getById_nonExistingId_throwsEntityNotFoundException")
+    @DisplayName("getById: викидає EntityNotFoundException, якщо гравця з ID не знайдено")
     void getById_nonExistingId_throwsEntityNotFoundException() {
         when(playerRepository.findById(2L)).thenReturn(Optional.empty());
 
@@ -203,7 +203,7 @@ class PlayerServiceTest {
     }
 
     @Test
-    @DisplayName("update_existingId_updatesFieldsAndRelationsAndReturnsDto")
+    @DisplayName("update: успішно оновлює поля та зв'язки гравця і повертає оновлений DTO")
     void update_existingId_updatesFieldsAndRelationsAndReturnsDto() {
         PlayerDto updateDto = new PlayerDto();
         updateDto.setPlayerName("Oleh");
@@ -244,7 +244,7 @@ class PlayerServiceTest {
     }
 
     @Test
-    @DisplayName("update_nonExistingId_throwsEntityNotFoundException")
+    @DisplayName("update: викидає EntityNotFoundException, якщо гравця для оновлення не знайдено")
     void update_nonExistingId_throwsEntityNotFoundException() {
 
         when(playerRepository.findById(15L)).thenReturn(Optional.empty());
@@ -254,7 +254,7 @@ class PlayerServiceTest {
     }
 
     @Test
-    @DisplayName("delete_existingId_deletesEntity")
+    @DisplayName("delete: успішно видаляє сутність за існуючим ID")
     void delete_existingId_deletesEntity() {
         when(playerRepository.existsById(1L)).thenReturn(true);
 
@@ -264,7 +264,7 @@ class PlayerServiceTest {
     }
 
     @Test
-    @DisplayName("delete_nonExistingId_throwsEntityNotFoundException")
+    @DisplayName("delete: викидає EntityNotFoundException, якщо гравця для видалення не знайдено")
     void delete_nonExistingId_throwsEntityNotFoundException() {
         when(playerRepository.existsById(66L)).thenReturn(false);
 

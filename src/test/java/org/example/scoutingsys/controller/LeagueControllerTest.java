@@ -40,7 +40,7 @@ class LeagueControllerTest {
     }
 
     @Test
-    @DisplayName("getAll_leaguesExist_returnsOkWithList")
+    @DisplayName("getAll: повертає статус 200 OK та список ліг, якщо вони існують")
     void getAll_leaguesExist_returnsOkWithList() {
         when(leagueService.getAll()).thenReturn(List.of(leagueDto));
 
@@ -52,7 +52,7 @@ class LeagueControllerTest {
     }
 
     @Test
-    @DisplayName("getById_existingId_returnsOkWithDto")
+    @DisplayName("getById: повертає статус 200 OK та DTO ліги за існуючим ID")
     void getById_existingId_returnsOkWithDto() {
         when(leagueService.getById(1L)).thenReturn(leagueDto);
 
@@ -63,7 +63,7 @@ class LeagueControllerTest {
     }
 
     @Test
-    @DisplayName("getById_serviceThrowsNotFound_propagatesException")
+    @DisplayName("getById: прокидає EntityNotFoundException, якщо лігу не знайдено")
     void getById_serviceThrowsNotFound_propagatesException() {
         when(leagueService.getById(404L)).thenThrow(new EntityNotFoundException("Ліга з ID 404 не знайдена"));
 
@@ -71,7 +71,7 @@ class LeagueControllerTest {
     }
 
     @Test
-    @DisplayName("create_validDto_returnsCreatedWithDto")
+    @DisplayName("create: успішно створює лігу та повертає статус 201 Created з DTO")
     void create_validDto_returnsCreatedWithDto() {
         LeagueDto inputDto = new LeagueDto();
         inputDto.setLeagueName("UPL");
@@ -91,7 +91,7 @@ class LeagueControllerTest {
 
 
     @Test
-    @DisplayName("update_validDto_returnsOkWithDto")
+    @DisplayName("update: успішно оновлює лігу та повертає статус 200 OK з оновленим DTO")
     void update_validDto_returnsOkWithDto() {
         LeagueDto updateDto = new LeagueDto();
         updateDto.setLeagueName("La Liga");
@@ -113,7 +113,7 @@ class LeagueControllerTest {
 
 
     @Test
-    @DisplayName("delete_existingId_returnsNoContent")
+    @DisplayName("delete: повертає статус 204 No Content після успішного видалення ліги")
     void delete_existingId_returnsNoContent() {
         doNothing().when(leagueService).delete(1L);
 
@@ -124,7 +124,7 @@ class LeagueControllerTest {
     }
 
     @Test
-    @DisplayName("delete_serviceThrowsNotFound_propagatesException")
+    @DisplayName("delete: прокидає EntityNotFoundException, якщо лігу для видалення не знайдено")
     void delete_serviceThrowsNotFound_propagatesException() {
         doThrow(new EntityNotFoundException("Ліга з ID 88 не знайдена"))
                 .when(leagueService).delete(88L);

@@ -40,7 +40,7 @@ class ClubControllerTest {
 
 
     @Test
-    @DisplayName("getAll_clubsExist_returnsOkWithList")
+    @DisplayName("getAll: повертає статус 200 OK та список клубів, якщо вони існують")
     void getAll_clubsExist_returnsOkWithList() {
         when(clubService.getAll()).thenReturn(List.of(clubDto));
 
@@ -54,7 +54,7 @@ class ClubControllerTest {
 
 
     @Test
-    @DisplayName("getById_existingId_returnsOkWithDto")
+    @DisplayName("getById: повертає статус 200 OK та DTO клубу за існуючим ID")
     void getById_existingId_returnsOkWithDto() {
         when(clubService.getById(1L)).thenReturn(clubDto);
 
@@ -65,7 +65,7 @@ class ClubControllerTest {
     }
 
     @Test
-    @DisplayName("getById_serviceThrowsNotFound_propagatesException")
+    @DisplayName("getById: прокидає EntityNotFoundException, якщо клуб не знайдено")
     void getById_serviceThrowsNotFound_propagatesException() {
         when(clubService.getById(99L)).thenThrow(new EntityNotFoundException("Клуб з ID 99 не знайдений"));
 
@@ -73,7 +73,7 @@ class ClubControllerTest {
     }
 
     @Test
-    @DisplayName("create_validDto_returnsCreatedWithDto")
+    @DisplayName("create: успішно створює клуб та повертає статус 201 Created з DTO")
     void create_validDto_returnsCreatedWithDto() {
         ClubDto inputDto = new ClubDto();
         inputDto.setClubName("Dynamo");
@@ -93,7 +93,7 @@ class ClubControllerTest {
 
 
     @Test
-    @DisplayName("update_validDto_returnsOkWithDto")
+    @DisplayName("update: успішно оновлює клуб та повертає статус 200 OK з оновленим DTO")
     void update_validDto_returnsOkWithDto() {
         // Arrange
         ClubDto updateDto = new ClubDto();
@@ -116,7 +116,7 @@ class ClubControllerTest {
 
 
     @Test
-    @DisplayName("delete_existingId_returnsNoContent")
+    @DisplayName("delete: повертає статус 204 No Content після успішного видалення клубу")
     void delete_existingId_returnsNoContent() {
         doNothing().when(clubService).delete(1L);
 
@@ -127,7 +127,7 @@ class ClubControllerTest {
     }
 
     @Test
-    @DisplayName("delete_serviceThrowsNotFound_propagatesException")
+    @DisplayName("delete: прокидає EntityNotFoundException, якщо клуб для видалення не знайдено")
     void delete_serviceThrowsNotFound_propagatesException() {
         doThrow(new EntityNotFoundException("Клуб з ID 123 не знайдений"))
                 .when(clubService).delete(123L);

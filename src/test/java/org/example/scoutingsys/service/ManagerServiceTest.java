@@ -69,7 +69,7 @@ class ManagerServiceTest {
     }
 
     @Test
-    @DisplayName("create_validInputWithClub_returnsSavedDto")
+    @DisplayName("create: успішно створює менеджера з прив'язкою до клубу та повертає збережений DTO")
     void create_validInputWithClub_returnsSavedDto() {
         ManagerDto inputDto = new ManagerDto();
         inputDto.setManagerName("Coach");
@@ -99,7 +99,7 @@ class ManagerServiceTest {
     }
 
     @Test
-    @DisplayName("create_validInputWithoutClub_setsClubToNull")
+    @DisplayName("create: успішно створює менеджера без клубу (club встановлюється в null)")
     void create_validInputWithoutClub_setsClubToNull() {
         ManagerDto inputDto = new ManagerDto();
         inputDto.setManagerName("Coach");
@@ -123,7 +123,7 @@ class ManagerServiceTest {
     }
 
     @Test
-    @DisplayName("create_nonExistingCountryId_throwsEntityNotFoundException")
+    @DisplayName("create: викидає EntityNotFoundException, якщо країну з вказаним countryId не знайдено")
     void create_nonExistingCountryId_throwsEntityNotFoundException() {
         ManagerDto inputDto = new ManagerDto();
         inputDto.setCountryId(999L);
@@ -139,7 +139,7 @@ class ManagerServiceTest {
     }
 
     @Test
-    @DisplayName("create_nonExistingClubId_throwsEntityNotFoundException")
+    @DisplayName("create: викидає EntityNotFoundException, якщо клуб з вказаним clubId не знайдено")
     void create_nonExistingClubId_throwsEntityNotFoundException() {
         ManagerDto inputDto = new ManagerDto();
         inputDto.setCountryId(3L);
@@ -154,7 +154,7 @@ class ManagerServiceTest {
     }
 
     @Test
-    @DisplayName("getAll_managersExist_returnsMappedDtoList")
+    @DisplayName("getAll: повертає список змаплених DTO, якщо менеджери є в базі даних")
     void getAll_managersExist_returnsMappedDtoList() {
         when(managerRepository.findAll()).thenReturn(List.of(manager));
         when(managerMapper.toDto(manager)).thenReturn(managerDto);
@@ -166,7 +166,7 @@ class ManagerServiceTest {
     }
 
     @Test
-    @DisplayName("getAll_noManagers_returnsEmptyList")
+    @DisplayName("getAll: повертає порожній список, якщо менеджерів немає")
     void getAll_noManagers_returnsEmptyList() {
         when(managerRepository.findAll()).thenReturn(List.of());
 
@@ -176,7 +176,7 @@ class ManagerServiceTest {
     }
 
     @Test
-    @DisplayName("getById_existingId_returnsDto")
+    @DisplayName("getById: повертає DTO менеджера за існуючим ID")
     void getById_existingId_returnsDto() {
         when(managerRepository.findById(1L)).thenReturn(Optional.of(manager));
         when(managerMapper.toDto(manager)).thenReturn(managerDto);
@@ -187,7 +187,7 @@ class ManagerServiceTest {
     }
 
     @Test
-    @DisplayName("getById_nonExistingId_throwsEntityNotFoundException")
+    @DisplayName("getById: викидає EntityNotFoundException, якщо менеджера з ID не знайдено")
     void getById_nonExistingId_throwsEntityNotFoundException() {
         when(managerRepository.findById(2L)).thenReturn(Optional.empty());
 
@@ -196,7 +196,7 @@ class ManagerServiceTest {
     }
 
     @Test
-    @DisplayName("update_existingId_updatesFieldsAndRelationsAndReturnsDto")
+    @DisplayName("update: успішно оновлює поля та зв'язки менеджера і повертає оновлений DTO")
     void update_existingId_updatesFieldsAndRelationsAndReturnsDto() {
         ManagerDto updateDto = new ManagerDto();
         updateDto.setManagerName("New Coach");
@@ -233,7 +233,7 @@ class ManagerServiceTest {
     }
 
     @Test
-    @DisplayName("update_nonExistingId_throwsEntityNotFoundException")
+    @DisplayName("update: викидає EntityNotFoundException, якщо менеджера для оновлення не знайдено")
     void update_nonExistingId_throwsEntityNotFoundException() {
         when(managerRepository.findById(15L)).thenReturn(Optional.empty());
 
@@ -242,7 +242,7 @@ class ManagerServiceTest {
     }
 
     @Test
-    @DisplayName("delete_existingId_deletesEntity")
+    @DisplayName("delete: успішно видаляє сутність за існуючим ID")
     void delete_existingId_deletesEntity() {
         when(managerRepository.existsById(1L)).thenReturn(true);
 
@@ -252,7 +252,7 @@ class ManagerServiceTest {
     }
 
     @Test
-    @DisplayName("delete_nonExistingId_throwsEntityNotFoundException")
+    @DisplayName("delete: викидає EntityNotFoundException, якщо менеджера для видалення не знайдено")
     void delete_nonExistingId_throwsEntityNotFoundException() {
         when(managerRepository.existsById(66L)).thenReturn(false);
 

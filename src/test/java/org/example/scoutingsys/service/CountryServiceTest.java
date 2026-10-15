@@ -50,7 +50,7 @@ class CountryServiceTest {
     }
 
     @Test
-    @DisplayName("create_validInput_returnsSavedDto")
+    @DisplayName("create: успішно створює країну та повертає збережений DTO")
     void create_validInput_returnsSavedDto() {
         CountryDto inputDto = new CountryDto();
         inputDto.setCountryName("Ukraine");
@@ -77,7 +77,7 @@ class CountryServiceTest {
     }
 
     @Test
-    @DisplayName("getAll_countriesExist_returnsMappedDtoList")
+    @DisplayName("getAll: повертає список змаплених DTO, якщо країни є в базі даних")
     void getAll_countriesExist_returnsMappedDtoList() {
         when(countryRepository.findAll()).thenReturn(List.of(country));
         when(countryMapper.toDto(country)).thenReturn(countryDto);
@@ -90,7 +90,7 @@ class CountryServiceTest {
     }
 
     @Test
-    @DisplayName("getAll_noCountries_returnsEmptyList")
+    @DisplayName("getAll: повертає порожній список, якщо країн немає")
     void getAll_noCountries_returnsEmptyList() {
         when(countryRepository.findAll()).thenReturn(List.of());
 
@@ -100,7 +100,7 @@ class CountryServiceTest {
     }
 
     @Test
-    @DisplayName("getById_existingId_returnsDto")
+    @DisplayName("getById: повертає DTO країни за існуючим ID")
     void getById_existingId_returnsDto() {
         when(countryRepository.findById(1L)).thenReturn(Optional.of(country));
         when(countryMapper.toDto(country)).thenReturn(countryDto);
@@ -111,7 +111,7 @@ class CountryServiceTest {
     }
 
     @Test
-    @DisplayName("getById_nonExistingId_throwsEntityNotFoundException")
+    @DisplayName("getById: викидає EntityNotFoundException, якщо країну з ID не знайдено")
     void getById_nonExistingId_throwsEntityNotFoundException() {
         when(countryRepository.findById(99L)).thenReturn(Optional.empty());
 
@@ -123,7 +123,7 @@ class CountryServiceTest {
     }
 
     @Test
-    @DisplayName("update_existingId_updatesFieldsAndReturnsDto")
+    @DisplayName("update: успішно оновлює поля країни та повертає оновлений DTO")
     void update_existingId_updatesFieldsAndReturnsDto() {
         CountryDto updateDto = new CountryDto();
         updateDto.setCountryName("Poland");
@@ -154,7 +154,7 @@ class CountryServiceTest {
     }
 
     @Test
-    @DisplayName("update_nonExistingId_throwsEntityNotFoundException")
+    @DisplayName("update: викидає EntityNotFoundException, якщо країну для оновлення не знайдено")
     void update_nonExistingId_throwsEntityNotFoundException() {
         when(countryRepository.findById(42L)).thenReturn(Optional.empty());
 
@@ -166,7 +166,7 @@ class CountryServiceTest {
     }
 
     @Test
-    @DisplayName("delete_existingId_deletesEntity")
+    @DisplayName("delete: успішно видаляє сутність за існуючим ID")
     void delete_existingId_deletesEntity() {
         when(countryRepository.existsById(1L)).thenReturn(true);
 
@@ -176,7 +176,7 @@ class CountryServiceTest {
     }
 
     @Test
-    @DisplayName("delete_nonExistingId_throwsEntityNotFoundException")
+    @DisplayName("delete: викидає EntityNotFoundException, якщо країну для видалення не знайдено")
     void delete_nonExistingId_throwsEntityNotFoundException() {
         when(countryRepository.existsById(77L)).thenReturn(false);
 

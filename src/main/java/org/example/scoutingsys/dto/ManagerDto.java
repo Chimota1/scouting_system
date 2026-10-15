@@ -2,9 +2,9 @@ package org.example.scoutingsys.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 import lombok.Setter;
-import org.example.scoutingsys.annotation.ValidIdReference;
 
 @Getter
 @Setter
@@ -14,9 +14,9 @@ public class ManagerDto {
     private String managerName;
     @NotNull(message = "В тренера має бути вік")
     private Integer managerAge;
-    @ValidIdReference
+    @Positive(message = "ID клубу має бути більшим за нуль")
     private Long clubId;
     @NotNull(message = "Країна є обов'язковою")
-    @ValidIdReference
+    @Positive(message = "ID країни має бути більшим за нуль")
     private Long countryId;
 }

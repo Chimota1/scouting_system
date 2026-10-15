@@ -41,7 +41,7 @@ class ManagerControllerTest {
     }
 
     @Test
-    @DisplayName("getAll_managersExist_returnsOkWithList")
+    @DisplayName("getAll: повертає статус 200 OK та список менеджерів, якщо вони існують")
     void getAll_managersExist_returnsOkWithList() {
         when(managerService.getAll()).thenReturn(List.of(managerDto));
 
@@ -53,7 +53,7 @@ class ManagerControllerTest {
     }
 
     @Test
-    @DisplayName("getById_existingId_returnsOkWithDto")
+    @DisplayName("getById: повертає статус 200 OK та DTO менеджера за існуючим ID")
     void getById_existingId_returnsOkWithDto() {
         when(managerService.getById(1L)).thenReturn(managerDto);
 
@@ -64,7 +64,7 @@ class ManagerControllerTest {
     }
 
     @Test
-    @DisplayName("getById_serviceThrowsNotFound_propagatesException")
+    @DisplayName("getById: прокидає EntityNotFoundException, якщо менеджера не знайдено")
     void getById_serviceThrowsNotFound_propagatesException() {
         when(managerService.getById(2L)).thenThrow(new EntityNotFoundException("Менеджер з ID 2 не знайдений"));
 
@@ -73,7 +73,7 @@ class ManagerControllerTest {
 
 
     @Test
-    @DisplayName("create_validDto_returnsCreatedWithDto")
+    @DisplayName("create: успішно створює менеджера та повертає статус 201 Created з DTO")
     void create_validDto_returnsCreatedWithDto() {
         ManagerDto inputDto = new ManagerDto();
         inputDto.setManagerName("Coach");
@@ -93,7 +93,7 @@ class ManagerControllerTest {
     }
 
     @Test
-    @DisplayName("update_validDto_returnsOkWithDto")
+    @DisplayName("update: успішно оновлює менеджера та повертає статус 200 OK з оновленим DTO")
     void update_validDto_returnsOkWithDto() {
         ManagerDto updateDto = new ManagerDto();
         updateDto.setManagerName("New Coach");
@@ -115,7 +115,7 @@ class ManagerControllerTest {
     }
 
     @Test
-    @DisplayName("delete_existingId_returnsNoContent")
+    @DisplayName("delete: повертає статус 204 No Content після успішного видалення менеджера")
     void delete_existingId_returnsNoContent() {
         doNothing().when(managerService).delete(1L);
 
@@ -126,7 +126,7 @@ class ManagerControllerTest {
     }
 
     @Test
-    @DisplayName("delete_serviceThrowsNotFound_propagatesException")
+    @DisplayName("delete: прокидає EntityNotFoundException, якщо менеджера для видалення не знайдено")
     void delete_serviceThrowsNotFound_propagatesException() {
         doThrow(new EntityNotFoundException("Менеджер з ID 66 не знайдений"))
                 .when(managerService).delete(66L);

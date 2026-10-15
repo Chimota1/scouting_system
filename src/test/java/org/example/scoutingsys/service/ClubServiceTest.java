@@ -63,7 +63,7 @@ class ClubServiceTest {
     }
 
     @Test
-    @DisplayName("create_validInputWithoutManager_returnsSavedDto")
+    @DisplayName("create: успішно створює клуб без менеджера та повертає збережений DTO")
     void create_validInputWithoutManager_returnsSavedDto() {
         ClubDto inputDto = new ClubDto();
         inputDto.setClubName("Dynamo");
@@ -86,7 +86,7 @@ class ClubServiceTest {
     }
 
     @Test
-    @DisplayName("create_nonExistingLeagueId_throwsEntityNotFoundException")
+    @DisplayName("create: викидає EntityNotFoundException, якщо лігу з вказаним leagueId не знайдено")
     void create_nonExistingLeagueId_throwsEntityNotFoundException() {
         ClubDto inputDto = new ClubDto();
         inputDto.setClubName("Dynamo");
@@ -103,7 +103,7 @@ class ClubServiceTest {
     }
 
     @Test
-    @DisplayName("create_withValidManagerId_assignsManagerToClubAndSavesManager")
+    @DisplayName("create: успішно прив'язує існуючого менеджера до клубу та зберігає його")
     void create_withValidManagerId_assignsManagerToClubAndSavesManager() {
         ManagerDto managerDto = new ManagerDto();
         managerDto.setId(7L);
@@ -137,7 +137,7 @@ class ClubServiceTest {
     }
 
     @Test
-    @DisplayName("create_withNonExistingManagerId_throwsEntityNotFoundException")
+    @DisplayName("create: викидає EntityNotFoundException, якщо менеджера з вказаним ID не знайдено")
     void create_withNonExistingManagerId_throwsEntityNotFoundException() {
         ManagerDto managerDto = new ManagerDto();
         managerDto.setId(404L);
@@ -160,7 +160,7 @@ class ClubServiceTest {
 
 
     @Test
-    @DisplayName("getAll_clubsExist_returnsMappedDtoList")
+    @DisplayName("getAll: повертає список змаплених DTO, якщо клуби є в базі даних")
     void getAll_clubsExist_returnsMappedDtoList() {
         when(clubRepository.findAll()).thenReturn(List.of(club));
         when(clubMapper.toDto(club)).thenReturn(clubDto);
@@ -172,7 +172,7 @@ class ClubServiceTest {
     }
 
     @Test
-    @DisplayName("getAll_noClubs_returnsEmptyList")
+    @DisplayName("getAll: повертає порожній список, якщо клубів немає")
     void getAll_noClubs_returnsEmptyList() {
         when(clubRepository.findAll()).thenReturn(List.of());
 
@@ -182,7 +182,7 @@ class ClubServiceTest {
     }
 
     @Test
-    @DisplayName("getById_existingId_returnsDto")
+    @DisplayName("getById: повертає DTO клубу за існуючим ID")
     void getById_existingId_returnsDto() {
         when(clubRepository.findById(1L)).thenReturn(Optional.of(club));
         when(clubMapper.toDto(club)).thenReturn(clubDto);
@@ -193,7 +193,7 @@ class ClubServiceTest {
     }
 
     @Test
-    @DisplayName("getById_nonExistingId_throwsEntityNotFoundException")
+    @DisplayName("getById: викидає EntityNotFoundException, якщо клуб з ID не знайдено")
     void getById_nonExistingId_throwsEntityNotFoundException() {
         when(clubRepository.findById(2L)).thenReturn(Optional.empty());
 
@@ -202,7 +202,7 @@ class ClubServiceTest {
     }
 
     @Test
-    @DisplayName("update_existingClubAndLeague_updatesAndReturnsDto")
+    @DisplayName("update: успішно оновлює клуб і лігу та повертає оновлений DTO")
     void update_existingClubAndLeague_updatesAndReturnsDto() {
         ClubDto updateDto = new ClubDto();
         updateDto.setClubName("Shakhtar");
@@ -233,7 +233,7 @@ class ClubServiceTest {
     }
 
     @Test
-    @DisplayName("update_nonExistingClubId_throwsEntityNotFoundException")
+    @DisplayName("update: викидає EntityNotFoundException, якщо клуб для оновлення не знайдено")
     void update_nonExistingClubId_throwsEntityNotFoundException() {
         when(clubRepository.findById(9L)).thenReturn(Optional.empty());
 
@@ -242,7 +242,7 @@ class ClubServiceTest {
     }
 
     @Test
-    @DisplayName("update_nonExistingLeagueId_throwsEntityNotFoundException")
+    @DisplayName("update: викидає EntityNotFoundException, якщо нову лігу не знайдено")
     void update_nonExistingLeagueId_throwsEntityNotFoundException() {
         ClubDto updateDto = new ClubDto();
         updateDto.setClubName("Shakhtar");
@@ -257,7 +257,7 @@ class ClubServiceTest {
 
 
     @Test
-    @DisplayName("delete_existingId_deletesEntity")
+    @DisplayName("delete: успішно видаляє сутність за існуючим ID")
     void delete_existingId_deletesEntity() {
         when(clubRepository.existsById(1L)).thenReturn(true);
 
@@ -267,7 +267,7 @@ class ClubServiceTest {
     }
 
     @Test
-    @DisplayName("delete_nonExistingId_throwsEntityNotFoundException")
+    @DisplayName("delete: викидає EntityNotFoundException, якщо клуб для видалення не знайдено")
     void delete_nonExistingId_throwsEntityNotFoundException() {
         when(clubRepository.existsById(123L)).thenReturn(false);
 

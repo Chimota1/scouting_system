@@ -1,7 +1,7 @@
 package org.example.scoutingsys.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.example.scoutingsys.annotation.CurrentUser; // 1. Імпортуємо твою кастомну анотацію
+import org.example.scoutingsys.annotation.CurrentUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;

@@ -40,7 +40,7 @@ class CountryControllerTest {
     }
 
     @Test
-    @DisplayName("getAll_countriesExist_returnsOkWithList")
+    @DisplayName("getAll: повертає статус 200 OK та список країн, якщо вони існують")
     void getAll_countriesExist_returnsOkWithList() {
         when(countryService.getAll()).thenReturn(List.of(countryDto));
 
@@ -53,7 +53,7 @@ class CountryControllerTest {
 
 
     @Test
-    @DisplayName("getById_existingId_returnsOkWithDto")
+    @DisplayName("getById: повертає статус 200 OK та DTO країни за існуючим ID")
     void getById_existingId_returnsOkWithDto() {
         when(countryService.getById(1L)).thenReturn(countryDto);
 
@@ -64,7 +64,7 @@ class CountryControllerTest {
     }
 
     @Test
-    @DisplayName("getById_serviceThrowsNotFound_propagatesException")
+    @DisplayName("getById: прокидає EntityNotFoundException, якщо країну не знайдено")
     void getById_serviceThrowsNotFound_propagatesException() {
         when(countryService.getById(99L)).thenThrow(new EntityNotFoundException("Країна з ID 99 не знайдена"));
 
@@ -73,7 +73,7 @@ class CountryControllerTest {
 
 
     @Test
-    @DisplayName("create_validDto_returnsCreatedWithDto")
+    @DisplayName("create: успішно створює країну та повертає статус 201 Created з DTO")
     void create_validDto_returnsCreatedWithDto() {
         CountryDto inputDto = new CountryDto();
         inputDto.setCountryName("Ukraine");
@@ -93,7 +93,7 @@ class CountryControllerTest {
 
 
     @Test
-    @DisplayName("update_validDto_returnsOkWithDto")
+    @DisplayName("update: успішно оновлює країну та повертає статус 200 OK з оновленим DTO")
     void update_validDto_returnsOkWithDto() {
         CountryDto updateDto = new CountryDto();
         updateDto.setCountryName("Poland");
@@ -115,7 +115,7 @@ class CountryControllerTest {
 
 
     @Test
-    @DisplayName("delete_existingId_returnsNoContent")
+    @DisplayName("delete: повертає статус 204 No Content після успішного видалення країни")
     void delete_existingId_returnsNoContent() {
         doNothing().when(countryService).delete(1L);
 
@@ -126,7 +126,7 @@ class CountryControllerTest {
     }
 
     @Test
-    @DisplayName("delete_serviceThrowsNotFound_propagatesException")
+    @DisplayName("delete: прокидає EntityNotFoundException, якщо країну для видалення не знайдено")
     void delete_serviceThrowsNotFound_propagatesException() {
         doThrow(new EntityNotFoundException("Країна з ID 77 не знайдена"))
                 .when(countryService).delete(77L);

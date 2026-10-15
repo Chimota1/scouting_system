@@ -62,7 +62,7 @@ class LeagueServiceTest {
     }
 
     @Test
-    @DisplayName("create_validInput_returnsSavedDtoWithCountry")
+    @DisplayName("create: успішно створює лігу з прив'язаною країною та повертає збережений DTO")
     void create_validInput_returnsSavedDtoWithCountry() {
         LeagueDto inputDto = new LeagueDto();
         inputDto.setLeagueName("UPL");
@@ -88,7 +88,7 @@ class LeagueServiceTest {
     }
 
     @Test
-    @DisplayName("create_nonExistingCountryId_throwsEntityNotFoundException")
+    @DisplayName("create: викидає EntityNotFoundException, якщо країну з вказаним countryId не знайдено")
     void create_nonExistingCountryId_throwsEntityNotFoundException() {
         LeagueDto inputDto = new LeagueDto();
         inputDto.setLeagueName("UPL");
@@ -106,7 +106,7 @@ class LeagueServiceTest {
 
 
     @Test
-    @DisplayName("getAll_leaguesExist_returnsMappedDtoList")
+    @DisplayName("getAll: повертає список змаплених DTO, якщо ліги є в базі даних")
     void getAll_leaguesExist_returnsMappedDtoList() {
         when(leagueRepository.findAll()).thenReturn(List.of(league));
         when(leagueMapper.toDto(league)).thenReturn(leagueDto);
@@ -118,7 +118,7 @@ class LeagueServiceTest {
     }
 
     @Test
-    @DisplayName("getAll_noLeagues_returnsEmptyList")
+    @DisplayName("getAll: повертає порожній список, якщо ліг немає")
     void getAll_noLeagues_returnsEmptyList() {
         when(leagueRepository.findAll()).thenReturn(List.of());
 
@@ -128,7 +128,7 @@ class LeagueServiceTest {
     }
 
     @Test
-    @DisplayName("getById_existingId_returnsDto")
+    @DisplayName("getById: повертає DTO ліги за існуючим ID")
     void getById_existingId_returnsDto() {
         when(leagueRepository.findById(1L)).thenReturn(Optional.of(league));
         when(leagueMapper.toDto(league)).thenReturn(leagueDto);
@@ -139,7 +139,7 @@ class LeagueServiceTest {
     }
 
     @Test
-    @DisplayName("getById_nonExistingId_throwsEntityNotFoundException")
+    @DisplayName("getById: викидає EntityNotFoundException, якщо лігу з ID не знайдено")
     void getById_nonExistingId_throwsEntityNotFoundException() {
         when(leagueRepository.findById(404L)).thenReturn(Optional.empty());
 
@@ -148,7 +148,7 @@ class LeagueServiceTest {
     }
 
     @Test
-    @DisplayName("update_existingLeagueAndCountry_updatesAndReturnsDto")
+    @DisplayName("update: успішно оновлює назву ліги та країну і повертає оновлений DTO")
     void update_existingLeagueAndCountry_updatesAndReturnsDto() {
         LeagueDto updateDto = new LeagueDto();
         updateDto.setLeagueName("La Liga");
@@ -180,7 +180,7 @@ class LeagueServiceTest {
     }
 
     @Test
-    @DisplayName("update_nonExistingLeagueId_throwsEntityNotFoundException")
+    @DisplayName("update: викидає EntityNotFoundException, якщо лігу для оновлення не знайдено")
     void update_nonExistingLeagueId_throwsEntityNotFoundException() {
         when(leagueRepository.findById(55L)).thenReturn(Optional.empty());
 
@@ -189,7 +189,7 @@ class LeagueServiceTest {
     }
 
     @Test
-    @DisplayName("update_nonExistingCountryId_throwsEntityNotFoundException")
+    @DisplayName("update: викидає EntityNotFoundException, якщо нову країну не знайдено")
     void update_nonExistingCountryId_throwsEntityNotFoundException() {
         LeagueDto updateDto = new LeagueDto();
         updateDto.setLeagueName("La Liga");
@@ -203,7 +203,7 @@ class LeagueServiceTest {
     }
 
     @Test
-    @DisplayName("delete_existingId_deletesEntity")
+    @DisplayName("delete: успішно видаляє сутність за існуючим ID")
     void delete_existingId_deletesEntity() {
         when(leagueRepository.existsById(1L)).thenReturn(true);
 
@@ -213,7 +213,7 @@ class LeagueServiceTest {
     }
 
     @Test
-    @DisplayName("delete_nonExistingId_throwsEntityNotFoundException")
+    @DisplayName("delete: викидає EntityNotFoundException, якщо лігу для видалення не знайдено")
     void delete_nonExistingId_throwsEntityNotFoundException() {
         when(leagueRepository.existsById(88L)).thenReturn(false);
 
