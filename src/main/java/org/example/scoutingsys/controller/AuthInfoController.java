@@ -1,7 +1,7 @@
 package org.example.scoutingsys.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.example.scoutingsys.annotation.CurrentUser;
+import org.example.scoutingsys.annotation.ScoutAgency;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
@@ -21,7 +21,7 @@ public class AuthInfoController {
     public Map<String, Object> getToken(
             OAuth2AuthenticationToken authentication,
             HttpServletRequest request,
-            @CurrentUser String username
+            @ScoutAgency String scoutAgency
     ) {
         if (authentication == null) {
             return Map.of("authenticated", false, "error", "Немає сесії в Spring Security");
@@ -39,7 +39,8 @@ public class AuthInfoController {
         return Map.of(
                 "authenticated", true,
                 "token", client.getAccessToken().getTokenValue(),
-                "username", username
+                "username", authentication.getName(),
+                "scoutAgency", scoutAgency
         );
     }
 }

@@ -1,7 +1,7 @@
 package org.example.scoutingsys.controller;
 
 import jakarta.validation.Valid;
-import org.example.scoutingsys.annotation.AdminPostMapping;
+import org.example.scoutingsys.annotation.PublicGetMapping;
 import org.example.scoutingsys.dto.ManagerDto;
 import org.example.scoutingsys.service.ManagerService;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +21,7 @@ public class ManagerController {
         this.service = service;
     }
 
-    @GetMapping
+    @PublicGetMapping
     @PreAuthorize("hasAnyRole('user', 'admin')")
     public ResponseEntity<List<ManagerDto>> getAll() {
         return ResponseEntity.ok(service.getAll());
@@ -33,7 +33,8 @@ public class ManagerController {
         return ResponseEntity.ok(service.getById(id));
     }
 
-    @AdminPostMapping
+    @PostMapping
+    @PreAuthorize("hasRole('admin')")
     public ResponseEntity<ManagerDto> create(
             @Valid @RequestBody ManagerDto ManagerDto) {
 

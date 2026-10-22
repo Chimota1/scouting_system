@@ -1,7 +1,8 @@
 package org.example.scoutingsys.controller;
 
 import jakarta.validation.Valid;
-import org.example.scoutingsys.annotation.AdminPostMapping;
+import org.example.scoutingsys.annotation.PublicGetMapping;
+import org.example.scoutingsys.annotation.ScoutAgency;
 import org.example.scoutingsys.dto.PlayerDto;
 import org.example.scoutingsys.service.PlayerService;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +10,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/players")
@@ -21,10 +23,18 @@ public class PlayerController {
         this.service = service;
     }
 
-    @GetMapping
+    @PublicGetMapping
     @PreAuthorize("hasAnyRole('user', 'admin')")
     public ResponseEntity<List<PlayerDto>> getAll() {
         return ResponseEntity.ok(service.getAll());
+    }
+
+    @PublicGetMapping("/scout-report")
+    public ResponseEntity<Map<String, Object>> getScoutReport(@ScoutAgency String agency) {
+        return ResponseEntity.ok(Map.of(
+                "agency", agency,
+                "totalPlayers", service.getAll().size()
+        ));
     }
 
     @GetMapping("/{id}")
@@ -33,7 +43,8 @@ public class PlayerController {
         return ResponseEntity.ok(service.getById(id));
     }
 
-    @AdminPostMapping
+    @PostMapping
+    @PreAuthorize("hasRole('admin')")
     public ResponseEntity<PlayerDto> create(
             @Valid @RequestBody PlayerDto playerDto) {
 
@@ -58,4 +69,3 @@ public class PlayerController {
         return ResponseEntity.noContent().build();
     }
 }
-

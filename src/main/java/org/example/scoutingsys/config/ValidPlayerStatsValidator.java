@@ -16,12 +16,10 @@ public class ValidPlayerStatsValidator implements ConstraintValidator<ValidPlaye
         Integer age = dto.getAge();
         Integer goals = dto.getGoals();
 
-        // Null checks are handled by @NotNull
         if (age == null || goals == null) {
             return true;
         }
 
-        // Rule 1: Minimum player registration age is 14
         if (age < 14) {
             context.disableDefaultConstraintViolation();
             context.buildConstraintViolationWithTemplate(

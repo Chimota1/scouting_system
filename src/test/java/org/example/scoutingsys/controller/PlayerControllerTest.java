@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -62,6 +63,19 @@ class PlayerControllerTest {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertTrue(response.getBody().isEmpty());
+    }
+
+    @Test
+    @DisplayName("getScoutReport: returns scout report with agency and total players")
+    void getScoutReport_returnsReportWithAgencyAndCount() {
+        when(playerService.getAll()).thenReturn(List.of(playerDto));
+
+        ResponseEntity<Map<String, Object>> response = playerController.getScoutReport("Ajax-Talents");
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals("Ajax-Talents", response.getBody().get("agency"));
+        assertEquals(1, response.getBody().get("totalPlayers"));
     }
 
     @Test

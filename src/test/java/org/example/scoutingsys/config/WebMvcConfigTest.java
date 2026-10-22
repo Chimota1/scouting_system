@@ -17,17 +17,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class WebMvcConfigTest {
 
     @Mock
-    private CurrentUserArgumentResolver currentUserArgumentResolver;
+    private ScoutAgencyArgumentResolver scoutAgencyArgumentResolver;
 
     @Test
-    @DisplayName("addArgumentResolvers: успішно реєструє CurrentUserArgumentResolver у списку обробників аргументів Spring MVC")
-    void addArgumentResolvers_addsCurrentUserArgumentResolverToList() {
-        WebMvcConfig webMvcConfig = new WebMvcConfig(currentUserArgumentResolver);
+    @DisplayName("addArgumentResolvers: registers ScoutAgencyArgumentResolver in Spring MVC resolver list")
+    void addArgumentResolvers_addsScoutAgencyArgumentResolverToList() {
+        WebMvcConfig webMvcConfig = new WebMvcConfig(scoutAgencyArgumentResolver);
         List<HandlerMethodArgumentResolver> resolvers = new ArrayList<>();
 
         webMvcConfig.addArgumentResolvers(resolvers);
 
         assertEquals(1, resolvers.size());
-        assertTrue(resolvers.contains(currentUserArgumentResolver));
+        assertTrue(resolvers.contains(scoutAgencyArgumentResolver));
     }
 }

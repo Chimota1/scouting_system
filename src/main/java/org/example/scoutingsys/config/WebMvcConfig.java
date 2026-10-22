@@ -9,14 +9,14 @@ import java.util.List;
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
 
-    private final CurrentUserArgumentResolver currentUserArgumentResolver;
+    private final ScoutAgencyArgumentResolver scoutAgencyArgumentResolver;
 
-    public WebMvcConfig(CurrentUserArgumentResolver currentUserArgumentResolver) {
-        this.currentUserArgumentResolver = currentUserArgumentResolver;
+    public WebMvcConfig(ScoutAgencyArgumentResolver scoutAgencyArgumentResolver) {
+        this.scoutAgencyArgumentResolver = scoutAgencyArgumentResolver;
     }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(currentUserArgumentResolver);
+        resolvers.add(scoutAgencyArgumentResolver);
     }
 }

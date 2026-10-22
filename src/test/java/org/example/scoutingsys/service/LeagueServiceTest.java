@@ -23,10 +23,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-/**
- * Unit-тести для {@link LeagueService}.
- * LeagueRepository та CountryRepository імітуються через Mockito (AC3), Spring-контекст не піднімається.
- */
 @ExtendWith(MockitoExtension.class)
 class LeagueServiceTest {
 
