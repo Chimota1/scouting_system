@@ -24,7 +24,7 @@ public class AuthInfoController {
             @ScoutAgency String scoutAgency
     ) {
         if (authentication == null) {
-            return Map.of("authenticated", false, "error", "Немає сесії в Spring Security");
+            return Map.of("authenticated", false, "error", "Немає сесії в Spring Security", "scoutAgency", scoutAgency);
         }
 
         OAuth2AuthorizedClient client = authorizedClientRepository.loadAuthorizedClient(
@@ -33,7 +33,7 @@ public class AuthInfoController {
                 request);
 
         if (client == null || client.getAccessToken() == null) {
-            return Map.of("authenticated", false, "error", "Token don`t founded in repository session");
+            return Map.of("authenticated", false, "error", "Token don`t founded in repository session", "scoutAgency", scoutAgency);
         }
 
         return Map.of(

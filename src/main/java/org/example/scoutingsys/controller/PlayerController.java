@@ -2,6 +2,7 @@ package org.example.scoutingsys.controller;
 
 import jakarta.validation.Valid;
 import org.example.scoutingsys.annotation.PublicGetMapping;
+import org.example.scoutingsys.annotation.RequireActiveScoutLicense;
 import org.example.scoutingsys.annotation.ScoutAgency;
 import org.example.scoutingsys.dto.PlayerDto;
 import org.example.scoutingsys.service.PlayerService;
@@ -30,6 +31,7 @@ public class PlayerController {
     }
 
     @PublicGetMapping("/scout-report")
+    @RequireActiveScoutLicense
     public ResponseEntity<Map<String, Object>> getScoutReport(@ScoutAgency String agency) {
         return ResponseEntity.ok(Map.of(
                 "agency", agency,
@@ -60,6 +62,13 @@ public class PlayerController {
             @Valid @RequestBody PlayerDto playerDto) {
 
         return ResponseEntity.ok(service.update(id, playerDto));
+    }
+
+    @DeleteMapping("/club/{clubId}")
+    @PreAuthorize("hasRole('admin')")
+    public ResponseEntity<Void> deleteAllByClub(@PathVariable Long clubId) {
+        service.deleteAllByClub(clubId);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")

@@ -1,6 +1,7 @@
 package org.example.scoutingsys.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.example.scoutingsys.annotation.SortByName;
 import org.example.scoutingsys.dto.ManagerDto;
 import org.example.scoutingsys.mapper.ManagerMapper;
 import org.example.scoutingsys.model.Club;
@@ -35,6 +36,7 @@ public class ManagerService {
         return managerMapper.toDto(managerRepository.save(manager));
     }
 
+    @SortByName
     public List<ManagerDto> getAll() {
         return managerRepository.findAll().stream()
                 .map(managerMapper::toDto)

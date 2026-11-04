@@ -1,6 +1,7 @@
 package org.example.scoutingsys.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.example.scoutingsys.annotation.SortByName;
 import org.example.scoutingsys.dto.CountryDto;
 import org.example.scoutingsys.mapper.CountryMapper;
 import org.example.scoutingsys.model.Country;
@@ -24,6 +25,7 @@ public class CountryService {
         return countryMapper.toDto(countryRepository.save(country));
     }
 
+    @SortByName
     public List<CountryDto> getAll() {
         return countryRepository.findAll().stream()
                 .map(countryMapper::toDto)

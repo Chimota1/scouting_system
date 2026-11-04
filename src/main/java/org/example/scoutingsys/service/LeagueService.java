@@ -1,6 +1,7 @@
 package org.example.scoutingsys.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.example.scoutingsys.annotation.SortByName;
 import org.example.scoutingsys.dto.LeagueDto;
 import org.example.scoutingsys.mapper.LeagueMapper;
 import org.example.scoutingsys.model.Country;
@@ -34,6 +35,7 @@ public class LeagueService {
         return leagueMapper.toDto(leagueRepository.save(league));
     }
 
+    @SortByName
     public List<LeagueDto> getAll() {
         return leagueRepository.findAll().stream()
                 .map(leagueMapper::toDto)

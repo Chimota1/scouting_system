@@ -170,6 +170,14 @@
   </div>
   <!-- Ось цей блок з ідентифікатором, який шукає JS -->
   <div style="display: flex; gap: 15px; align-items: center;">
+    <label for="scout-agency" style="font-size: 13px;">Агентство:</label>
+    <select id="scout-agency" title="Надсилається в заголовку X-Scout-Agency">
+      <option value="Independent-Scout">Independent-Scout</option>
+      <option value="Real-Madrid-Scout">Real-Madrid-Scout</option>
+      <option value="Dynamo-Scouting-Agency">Dynamo-Scouting-Agency</option>
+      <option value="EXPIRED-LICENSE">EXPIRED-LICENSE (прострочена)</option>
+      <option value="BLOCKED-AGENCY">BLOCKED-AGENCY (заблокована)</option>
+    </select>
     <span id="user-info" style="font-weight: bold; color: var(--accent);">Завантаження...</span>
     <button class="btn secondary" onclick="window.location.href='/logout'">Вийти</button>
   </div>
@@ -349,6 +357,12 @@
       </form>
     </div>
     <div class="card">
+      <h2>Звіт скаута</h2>
+      <p style="margin-top: 0;">Потребує активної ліцензії агентства</p>
+      <button type="button" class="btn" onclick="loadScoutReport()">Згенерувати звіт</button>
+      <p id="scout-report-result" style="margin-bottom: 0;"></p>
+    </div>
+    <div class="card">
       <h2>Список гравців</h2>
       <table>
         <thead><tr><th>ID</th><th>Ім'я</th><th>Вік</th><th>Голи</th><th>Країна</th><th>Клуб</th><th></th></tr></thead>
@@ -384,6 +398,33 @@
     toastTimer = setTimeout(() => el.classList.remove('show'), 5000);
   }
 
+  /* ---------------------- scout agency ---------------------- */
+  const agencySelect = document.getElementById('scout-agency');
+  try {
+    const saved = localStorage.getItem('scoutAgency');
+    if (saved) agencySelect.value = saved;
+  } catch (e) { /* localStorage недоступний — лишаємо значення за замовчуванням */ }
+  agencySelect.addEventListener('change', () => {
+    try { localStorage.setItem('scoutAgency', agencySelect.value); } catch (e) {}
+  });
+
+  function getScoutAgency() {
+    return agencySelect.value || 'Independent-Scout';
+  }
+
+  async function loadScoutReport() {
+    const out = document.getElementById('scout-report-result');
+    out.textContent = '';
+    try {
+      const report = await apiFetch('/players/scout-report');
+      if (!report) return;
+      out.textContent = 'Агентство: ' + report.agency + ' — гравців у базі: ' + report.totalPlayers;
+      showMessage('Звіт згенеровано', 'success');
+    } catch (e) {
+      showMessage(e.message, 'error');
+    }
+  }
+
   /* ---------------------- generic API helper ---------------------- */
   async function apiFetch(path, options = {}) {
     let res;
@@ -394,6 +435,7 @@
           'Content-Type': 'application/json',
           'Accept': 'application/json',
           'Authorization': 'Bearer ' + ACCESS_TOKEN,
+          'X-Scout-Agency': getScoutAgency(),
           ...(options.headers || {})
         }
       });
@@ -790,7 +832,7 @@
    ================================================================== */
   async function initSession() {
     try {
-      const res = await fetch('/auth/token');
+      const res = await fetch('/auth/token', { headers: { 'X-Scout-Agency': getScoutAgency() } });
 
       if (!res.ok) {
         document.body.innerHTML = `<div style="padding:40px; text-align:center;">

@@ -1,6 +1,8 @@
 package org.example.scoutingsys.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.example.scoutingsys.annotation.SortByName;
+import org.example.scoutingsys.annotation.AuditChange;
 import org.example.scoutingsys.dto.PlayerDto;
 import org.example.scoutingsys.mapper.PlayerMapper;
 import org.example.scoutingsys.model.Club;
@@ -28,6 +30,7 @@ public class PlayerService {
         this.countryRepository = countryRepository;
     }
 
+    @AuditChange(action = "CREATE", entity = "Player")
     public PlayerDto create(PlayerDto playerDto) {
         Player player = playerMapper.toEntity(playerDto);
         setRelations(player, playerDto);
@@ -35,6 +38,7 @@ public class PlayerService {
         return playerMapper.toDto(playerRepository.save(player));
     }
 
+    @SortByName
     public List<PlayerDto> getAll() {
         return playerRepository.findAll().stream()
                 .map(playerMapper::toDto)
@@ -48,6 +52,7 @@ public class PlayerService {
         return playerMapper.toDto(player);
     }
 
+    @AuditChange(action = "UPDATE", entity = "Player")
     public PlayerDto update(Long id, PlayerDto playerDto) {
         Player existingPlayer = playerRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(
@@ -77,10 +82,17 @@ public class PlayerService {
         }
     }
 
+    @AuditChange(action = "DELETE", entity = "Player")
     public void delete(Long id) {
         if (!playerRepository.existsById(id)) {
             throw new EntityNotFoundException("Гравець з ID " + id + " не знайдений");
         }
         playerRepository.deleteById(id);
+    }
+
+
+    public void deleteAllByClub(Long clubId) {
+        playerRepository.findAllByClubId(clubId)
+                .forEach(player -> this.delete(player.getId()));
     }
 }
