@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: player-service
+  datasource:
+    url: ${PLAYER_DB_URL:jdbc:mysql://localhost:3306/scouting_db}
+    username: ${PLAYER_DB_USERNAME:root}
+    password: ${PLAYER_DB_PASSWORD:25102006}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+server:
+  port: 8082
