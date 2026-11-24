@@ -11,6 +11,15 @@ services:
       - keycloak_data:/opt/keycloak/data
     command: ["start-dev"]
 
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq_demo
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
   club-service:
     build:
       context: .
@@ -21,7 +30,10 @@ services:
       SPRING_DATASOURCE_PASSWORD: root
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/users
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/users/protocol/openid-connect/certs
+      RABBITMQ_HOST: rabbitmq
     depends_on:
+      rabbitmq:
+        condition: service_started
       keycloak:
         condition: service_started
 
@@ -38,7 +50,13 @@ services:
     build:
       context: .
       dockerfile: analytics-service/Dockerfile
+    environment:
+      RABBITMQ_HOST: rabbitmq
+    depends_on:
+      rabbitmq:
+        condition: service_started
 
 volumes:
   mysql_data:
   keycloak_data:
+  rabbitmq_data:

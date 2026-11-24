@@ -10,6 +10,7 @@ import org.example.scoutingsys.model.Manager;
 import org.example.scoutingsys.repository.ClubRepository;
 import org.example.scoutingsys.repository.LeagueRepository;
 import org.example.scoutingsys.repository.ManagerRepository;
+import org.example.scoutingsys.messaging.ClubEventPublisher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,6 +38,8 @@ class ClubServiceTest {
     private LeagueRepository leagueRepository;
     @Mock
     private ManagerRepository managerRepository;
+    @Mock
+    private ClubEventPublisher clubEventPublisher;
 
     @InjectMocks
     private ClubService clubService;

@@ -3,6 +3,9 @@ package org.example.scoutingsys.analytics.controller;
 import org.example.scoutingsys.analytics.dto.ClubDossierDto;
 import org.example.scoutingsys.analytics.dto.ServiceStatusDto;
 import org.example.scoutingsys.analytics.service.ClubAnalyticsService;
+import org.example.scoutingsys.analytics.messaging.ClubEventConsumer;
+import org.example.scoutingsys.analytics.messaging.ClubChangedEvent;
+import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,9 +14,12 @@ import org.springframework.web.bind.annotation.*;
 public class ClubAnalyticsController {
 
     private final ClubAnalyticsService clubAnalyticsService;
+    private final ClubEventConsumer clubEventConsumer;
 
-    public ClubAnalyticsController(ClubAnalyticsService clubAnalyticsService) {
+    public ClubAnalyticsController(ClubAnalyticsService clubAnalyticsService,
+                                   ClubEventConsumer clubEventConsumer) {
         this.clubAnalyticsService = clubAnalyticsService;
+        this.clubEventConsumer = clubEventConsumer;
     }
 
     @GetMapping("/health")
@@ -32,6 +38,16 @@ public class ClubAnalyticsController {
                                               @RequestParam(defaultValue = "board@club.com") String email) {
         clubAnalyticsService.notifyBoard(id, email);
         return ResponseEntity.accepted().body("Board notification scheduled");
+    }
+
+    @GetMapping("/events")
+    public Map<String, ClubChangedEvent> processedEvents() {
+        return clubEventConsumer.getProcessedEvents();
+    }
+
+    @GetMapping("/events/count")
+    public Map<String, Integer> processedEventCount() {
+        return Map.of("processedEvents", clubEventConsumer.getProcessedCount());
     }
 
     @GetMapping("/limited-audit/{id}")
